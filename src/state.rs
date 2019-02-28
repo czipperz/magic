@@ -37,12 +37,20 @@ impl State {
         unimplemented!()
     }
 
-    pub fn is_target_card_valid(&self, card: &Card, controller: PlayerNumber, predicate: fn (&Card, PlayerNumber, Location) -> bool) -> bool {
+    pub fn is_target_card_valid(
+        &self,
+        card: &Card,
+        controller: PlayerNumber,
+        predicate: fn(&Card, PlayerNumber, Location) -> bool,
+    ) -> bool {
         unimplemented!()
     }
 
-    pub fn select_target_card(&self, controller: PlayerNumber,
-                              predicate: fn (&Card, PlayerNumber, Location) -> bool) -> Option<Arc<Mutex<Card>>> {
+    pub fn select_target_card(
+        &self,
+        controller: PlayerNumber,
+        predicate: fn(&Card, PlayerNumber, Location) -> bool,
+    ) -> Option<Arc<Mutex<Card>>> {
         unimplemented!()
     }
 }

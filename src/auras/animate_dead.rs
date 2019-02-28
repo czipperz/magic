@@ -7,11 +7,11 @@ use crate::state::State;
 use crate::triggers::Triggers;
 use std::sync::{Arc, Mutex};
 
-pub fn animate_artifact(owner: PlayerNumber) -> Card {
+pub fn animate_dead(owner: PlayerNumber) -> Card {
     Card::new(
-        "Animate Artifact".to_string(),
+        "Animate Dead".to_string(),
         owner,
-        ManaCost::new().with_blue(1).with_generic(3),
+        ManaCost::new().with_black(1).with_generic(1),
         vec![Type::Enchantment],
     )
     .with_base_subtypes(vec![Subtype::Aura])
@@ -23,10 +23,11 @@ pub fn animate_artifact(owner: PlayerNumber) -> Card {
     )
 }
 
-fn is_artifact_on_battlefield(card: &Card, controller: PlayerNumber, location: Location) -> bool {
-    location == Location::Battlefield && card.types().contains(&Type::Artifact)
+fn is_creature_in_graveyard(card: &Card, controller: PlayerNumber, location: Location) -> bool {
+    location == Location::Graveyard && card.types().contains(&Type::Creature)
 }
 
+// all of this code is the exact same as Animate Artifact (except the predicate)
 fn can_cast(
     state: &State,
     bundle: &Bundle,
@@ -34,7 +35,7 @@ fn can_cast(
     controller: PlayerNumber,
     location: Location,
 ) -> bool {
-    state.is_any_card_targetable_by(controller, is_artifact_on_battlefield)
+    state.is_any_card_targetable_by(controller, is_creature_in_graveyard)
 }
 
 fn try_cast(
@@ -44,7 +45,7 @@ fn try_cast(
     controller: PlayerNumber,
     location: Location,
 ) -> bool {
-    match state.select_target_card(controller, is_artifact_on_battlefield) {
+    match state.select_target_card(controller, is_creature_in_graveyard) {
         Some(target_card) => {
             bundle
                 .map
@@ -64,7 +65,7 @@ fn on_cast(
 ) -> bool {
     let target_card = bundle.map["target_card"].unwrap_card();
     let mut target_card = target_card.lock().unwrap();
-    if state.is_target_card_valid(&*target_card, controller, is_artifact_on_battlefield) {
+    if state.is_target_card_valid(&*target_card, controller, is_creature_in_graveyard) {
         target_card.add_aura(card);
         true
     } else {
