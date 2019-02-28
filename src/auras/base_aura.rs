@@ -17,8 +17,8 @@ struct CreatureAuraCastTrigger {
     predicate: fn(&Card, PlayerNumber, Location) -> bool,
 }
 
-impl CastTriggers for CreatureAuraCastTrigger {
-    fn can_cast(
+impl Trigger for CreatureAuraCastTrigger {
+    fn can_execute(
         &self,
         state: &State,
         bundle: &Bundle,
@@ -29,7 +29,7 @@ impl CastTriggers for CreatureAuraCastTrigger {
         state.is_any_card_targetable_by(controller, self.predicate)
     }
 
-    fn try_cast(
+    fn try_execute(
         &self,
         state: &State,
         bundle: &mut Bundle,
@@ -48,7 +48,7 @@ impl CastTriggers for CreatureAuraCastTrigger {
         }
     }
 
-    fn on_cast(
+    fn on_execute(
         &self,
         state: &mut State,
         bundle: &mut Bundle,

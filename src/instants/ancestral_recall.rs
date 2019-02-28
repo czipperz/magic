@@ -19,8 +19,8 @@ pub fn ancestral_recall(owner: PlayerNumber) -> Card {
 
 struct AncestralRecallCastTriggers;
 
-impl CastTriggers for AncestralRecallCastTriggers {
-    fn can_cast(
+impl Trigger for AncestralRecallCastTriggers {
+    fn can_execute(
         &self,
         state: &State,
         bundle: &Bundle,
@@ -31,7 +31,7 @@ impl CastTriggers for AncestralRecallCastTriggers {
         state.is_any_player_targetable_by(controller)
     }
 
-    fn try_cast(
+    fn try_execute(
         &self,
         state: &State,
         bundle: &mut Bundle,
@@ -50,7 +50,7 @@ impl CastTriggers for AncestralRecallCastTriggers {
         }
     }
 
-    fn on_cast(
+    fn on_execute(
         &self,
         state: &mut State,
         bundle: &mut Bundle,

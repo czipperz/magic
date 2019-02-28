@@ -35,11 +35,11 @@ use std::sync::{Arc, Mutex};
 /// they are fulfilled.
 #[derive(Clone)]
 pub struct Triggers {
-    pub cast_triggers: Option<Arc<CastTriggers>>,
+    pub cast_triggers: Option<Arc<Trigger>>,
 }
 
-pub trait CastTriggers {
-    fn can_cast(
+pub trait Trigger {
+    fn can_execute(
         &self,
         state: &State,
         bundle: &Bundle,
@@ -48,7 +48,7 @@ pub trait CastTriggers {
         location: Location,
     ) -> bool;
 
-    fn try_cast(
+    fn try_execute(
         &self,
         state: &State,
         bundle: &mut Bundle,
@@ -57,7 +57,7 @@ pub trait CastTriggers {
         location: Location,
     ) -> bool;
 
-    fn on_cast(
+    fn on_execute(
         &self,
         state: &mut State,
         bundle: &mut Bundle,
@@ -72,7 +72,7 @@ impl Triggers {
         Self::default()
     }
 
-    pub fn with_cast_triggers(mut self, cast_triggers: impl CastTriggers + 'static) -> Self {
+    pub fn with_cast_triggers(mut self, cast_triggers: impl Trigger + 'static) -> Self {
         self.cast_triggers = Some(Arc::new(cast_triggers));
         self
     }
