@@ -35,9 +35,36 @@ use std::sync::{Arc, Mutex};
 /// they are fulfilled.
 #[derive(Clone)]
 pub struct Triggers {
-    pub can_cast: fn(&State, &Bundle, Arc<Mutex<Card>>, PlayerNumber, Location) -> bool,
-    pub try_cast: fn(&State, &mut Bundle, Arc<Mutex<Card>>, PlayerNumber, Location) -> bool,
-    pub on_cast: fn(&mut State, &mut Bundle, Arc<Mutex<Card>>, PlayerNumber, Location) -> bool,
+    pub cast_triggers: Option<Arc<CastTriggers>>,
+}
+
+pub trait CastTriggers {
+    fn can_cast(
+        &self,
+        state: &State,
+        bundle: &Bundle,
+        card: Arc<Mutex<Card>>,
+        controller: PlayerNumber,
+        location: Location,
+    ) -> bool;
+
+    fn try_cast(
+        &self,
+        state: &State,
+        bundle: &mut Bundle,
+        card: Arc<Mutex<Card>>,
+        controller: PlayerNumber,
+        location: Location,
+    ) -> bool;
+
+    fn on_cast(
+        &self,
+        state: &mut State,
+        bundle: &mut Bundle,
+        card: Arc<Mutex<Card>>,
+        controller: PlayerNumber,
+        location: Location,
+    ) -> bool;
 }
 
 impl Triggers {
@@ -45,25 +72,8 @@ impl Triggers {
         Self::default()
     }
 
-    pub fn with_can_cast(
-        mut self,
-        can_cast: fn(&State, &Bundle, Arc<Mutex<Card>>, PlayerNumber, Location) -> bool,
-    ) -> Self {
-        self.can_cast = can_cast;
-        self
-    }
-    pub fn with_try_cast(
-        mut self,
-        try_cast: fn(&State, &mut Bundle, Arc<Mutex<Card>>, PlayerNumber, Location) -> bool,
-    ) -> Self {
-        self.try_cast = try_cast;
-        self
-    }
-    pub fn with_on_cast(
-        mut self,
-        on_cast: fn(&mut State, &mut Bundle, Arc<Mutex<Card>>, PlayerNumber, Location) -> bool,
-    ) -> Self {
-        self.on_cast = on_cast;
+    pub fn with_cast_triggers(mut self, cast_triggers: impl CastTriggers + 'static) -> Self {
+        self.cast_triggers = Some(Arc::new(cast_triggers));
         self
     }
 }
@@ -71,9 +81,7 @@ impl Triggers {
 impl Default for Triggers {
     fn default() -> Self {
         Triggers {
-            can_cast: |_, _, _, _, _| true,
-            try_cast: |_, _, _, _, _| true,
-            on_cast: |_, _, _, _, _| true,
+            cast_triggers: None,
         }
     }
 }
