@@ -33,9 +33,9 @@ use std::sync::{Arc, Mutex};
 ///
 /// This allows for spells that have requirements to be cast to ensure
 /// they are fulfilled.
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Triggers {
-    pub cast_triggers: Option<Arc<Trigger>>,
+    pub cast: Option<Arc<Trigger>>,
 }
 
 pub trait Trigger {
@@ -73,16 +73,8 @@ impl Triggers {
     }
 
     pub fn with_cast_triggers(mut self, cast_triggers: impl Trigger + 'static) -> Self {
-        self.cast_triggers = Some(Arc::new(cast_triggers));
+        self.cast = Some(Arc::new(cast_triggers));
         self
-    }
-}
-
-impl Default for Triggers {
-    fn default() -> Self {
-        Triggers {
-            cast_triggers: None,
-        }
     }
 }
 
