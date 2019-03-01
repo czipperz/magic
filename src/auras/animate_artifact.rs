@@ -1,9 +1,9 @@
-use super::base_aura::*;
 use crate::card::*;
 use crate::location::Location;
 use crate::mana_cost::ManaCost;
 use crate::player::PlayerNumber;
-use crate::triggers::Triggers;
+use crate::state::State;
+use crate::triggers::*;
 
 pub fn animate_artifact(owner: PlayerNumber) -> Card {
     Card::new(
@@ -13,9 +13,22 @@ pub fn animate_artifact(owner: PlayerNumber) -> Card {
         vec![Type::Enchantment],
     )
     .with_base_subtypes(vec![Subtype::Aura])
-    .with_base_triggers(creature_aura(Triggers::new(), is_artifact_on_battlefield))
+    .with_base_triggers(
+        Triggers::new().with_cast_triggers(TriggerTargettingCreature::new(
+            is_artifact_on_battlefield,
+            |_, card, target_card, _, _| {
+                target_card.lock().unwrap().add_aura(card);
+                true
+            },
+        )),
+    )
 }
 
-fn is_artifact_on_battlefield(card: &Card, controller: PlayerNumber, location: Location) -> bool {
+fn is_artifact_on_battlefield(
+    state: &State,
+    card: &Card,
+    controller: PlayerNumber,
+    location: Location,
+) -> bool {
     location == Location::Battlefield && card.types().contains(&Type::Artifact)
 }

@@ -21,18 +21,18 @@ impl State {
         true
     }
 
-    pub fn select_target_player(&self, controller: PlayerNumber) -> Option<PlayerNumber> {
+    pub fn select_target_player(&mut self, controller: PlayerNumber) -> Option<PlayerNumber> {
         unimplemented!()
     }
 
-    pub fn make_player_draw_cards(&self, player: PlayerNumber, cards: usize) {
+    pub fn make_player_draw_cards(&mut self, player: PlayerNumber, cards: usize) {
         unimplemented!()
     }
 
     pub fn is_any_card_targetable_by(
         &self,
         controller: PlayerNumber,
-        predicate: fn(&Card, PlayerNumber, Location) -> bool,
+        predicate: &impl Fn(&State, &Card, PlayerNumber, Location) -> bool,
     ) -> bool {
         unimplemented!()
     }
@@ -41,16 +41,27 @@ impl State {
         &self,
         card: &Card,
         controller: PlayerNumber,
-        predicate: fn(&Card, PlayerNumber, Location) -> bool,
+        predicate: &impl Fn(&State, &Card, PlayerNumber, Location) -> bool,
     ) -> bool {
         unimplemented!()
     }
 
     pub fn select_target_card(
-        &self,
+        &mut self,
         controller: PlayerNumber,
-        predicate: fn(&Card, PlayerNumber, Location) -> bool,
+        predicate: &impl Fn(&State, &Card, PlayerNumber, Location) -> bool,
     ) -> Option<Arc<Mutex<Card>>> {
+        unimplemented!()
+    }
+
+    pub fn move_card(
+        &mut self,
+        card: Arc<Mutex<Card>>,
+        old_controller: PlayerNumber,
+        old_location: Location,
+        new_controller: PlayerNumber,
+        new_location: Location,
+    ) {
         unimplemented!()
     }
 }

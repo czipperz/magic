@@ -1,4 +1,4 @@
-use crate::bundle::Bundle;
+use crate::bundle::*;
 use crate::card::Card;
 use crate::location::Location;
 use crate::player::PlayerNumber;
@@ -50,7 +50,7 @@ pub trait Trigger {
 
     fn try_execute(
         &self,
-        state: &State,
+        state: &mut State,
         bundle: &mut Bundle,
         card: Arc<Mutex<Card>>,
         controller: PlayerNumber,
@@ -81,5 +81,139 @@ impl Triggers {
 impl fmt::Debug for Triggers {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt, "Triggers {{ .. }}")
+    }
+}
+
+pub struct TriggerTargettingPlayer<C> {
+    callback: C,
+}
+
+impl<C: Fn(&mut State, PlayerNumber) -> bool> TriggerTargettingPlayer<C> {
+    pub fn new(callback: C) -> Self {
+        TriggerTargettingPlayer { callback }
+    }
+}
+
+impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlayer<C> {
+    fn can_execute(
+        &self,
+        state: &State,
+        bundle: &Bundle,
+        card: Arc<Mutex<Card>>,
+        controller: PlayerNumber,
+        location: Location,
+    ) -> bool {
+        state.is_any_player_targetable_by(controller)
+    }
+
+    fn try_execute(
+        &self,
+        state: &mut State,
+        bundle: &mut Bundle,
+        card: Arc<Mutex<Card>>,
+        controller: PlayerNumber,
+        location: Location,
+    ) -> bool {
+        match state.select_target_player(controller) {
+            Some(target_player) => {
+                bundle
+                    .map
+                    .insert("target_player", BundleItem::Player(target_player));
+                true
+            }
+            None => false,
+        }
+    }
+
+    fn on_execute(
+        &self,
+        state: &mut State,
+        bundle: &mut Bundle,
+        card: Arc<Mutex<Card>>,
+        controller: PlayerNumber,
+        location: Location,
+    ) -> bool {
+        let target_player = bundle.map["target_player"].unwrap_player();
+        if state.is_target_player_valid(target_player, controller) {
+            (self.callback)(state, target_player)
+        } else {
+            false
+        }
+    }
+}
+
+pub struct TriggerTargettingCreature<P, C> {
+    predicate: P,
+    callback: C,
+}
+
+impl<P, C> TriggerTargettingCreature<P, C>
+where
+    P: Fn(&State, &Card, PlayerNumber, Location) -> bool,
+    C: Fn(
+        &mut State,
+        /* card with the trigger */ Arc<Mutex<Card>>,
+        /* target */ Arc<Mutex<Card>>,
+        PlayerNumber,
+        Location,
+    ) -> bool,
+{
+    pub fn new(predicate: P, callback: C) -> Self {
+        TriggerTargettingCreature {
+            predicate,
+            callback,
+        }
+    }
+}
+
+impl<P, C> Trigger for TriggerTargettingCreature<P, C>
+where
+    P: Fn(&State, &Card, PlayerNumber, Location) -> bool,
+    C: Fn(&mut State, Arc<Mutex<Card>>, Arc<Mutex<Card>>, PlayerNumber, Location) -> bool,
+{
+    fn can_execute(
+        &self,
+        state: &State,
+        bundle: &Bundle,
+        card: Arc<Mutex<Card>>,
+        controller: PlayerNumber,
+        location: Location,
+    ) -> bool {
+        state.is_any_card_targetable_by(controller, &self.predicate)
+    }
+
+    fn try_execute(
+        &self,
+        state: &mut State,
+        bundle: &mut Bundle,
+        card: Arc<Mutex<Card>>,
+        controller: PlayerNumber,
+        location: Location,
+    ) -> bool {
+        match state.select_target_card(controller, &self.predicate) {
+            Some(target_card) => {
+                bundle
+                    .map
+                    .insert("target_card", BundleItem::Card(target_card));
+                true
+            }
+            None => false,
+        }
+    }
+
+    fn on_execute(
+        &self,
+        state: &mut State,
+        bundle: &mut Bundle,
+        card: Arc<Mutex<Card>>,
+        controller: PlayerNumber,
+        location: Location,
+    ) -> bool {
+        let target_card = bundle.map["target_card"].unwrap_card();
+        if state.is_target_card_valid(&*target_card.lock().unwrap(), controller, &self.predicate) {
+            (self.callback)(state, card, target_card, unimplemented!(), unimplemented!())
+        } else {
+            false
+        }
     }
 }
