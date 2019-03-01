@@ -1,5 +1,5 @@
 use crate::card::*;
-use crate::location::Location;
+use crate::zone::Zone;
 use crate::mana_cost::ManaCost;
 use crate::player::PlayerNumber;
 use crate::state::State;
@@ -28,7 +28,7 @@ fn is_artifact_on_battlefield(
     state: &State,
     card: &Card,
     controller: PlayerNumber,
-    location: Location,
+    zone: Zone,
 ) -> bool {
-    location == Location::Battlefield && card.types().contains(&Type::Artifact)
+    zone == Zone::Battlefield && card.types().contains(&Type::Artifact)
 }

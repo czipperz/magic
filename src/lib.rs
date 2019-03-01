@@ -4,7 +4,7 @@ pub mod card;
 pub mod color;
 pub mod creatures;
 pub mod instants;
-pub mod location;
+pub mod zone;
 pub mod mana_cost;
 pub mod player;
 pub mod state;

@@ -1,5 +1,5 @@
 use crate::card::Card;
-use crate::location::Location;
+use crate::zone::Zone;
 use crate::player::*;
 use crate::user_interface::UserInterface;
 use std::sync::{Arc, Mutex};
@@ -32,7 +32,7 @@ impl State {
     pub fn is_any_card_targetable_by(
         &self,
         controller: PlayerNumber,
-        predicate: &impl Fn(&State, &Card, PlayerNumber, Location) -> bool,
+        predicate: &impl Fn(&State, &Card, PlayerNumber, Zone) -> bool,
     ) -> bool {
         unimplemented!()
     }
@@ -41,7 +41,7 @@ impl State {
         &self,
         card: &Card,
         controller: PlayerNumber,
-        predicate: &impl Fn(&State, &Card, PlayerNumber, Location) -> bool,
+        predicate: &impl Fn(&State, &Card, PlayerNumber, Zone) -> bool,
     ) -> bool {
         unimplemented!()
     }
@@ -49,7 +49,7 @@ impl State {
     pub fn select_target_card(
         &mut self,
         controller: PlayerNumber,
-        predicate: &impl Fn(&State, &Card, PlayerNumber, Location) -> bool,
+        predicate: &impl Fn(&State, &Card, PlayerNumber, Zone) -> bool,
     ) -> Option<Arc<Mutex<Card>>> {
         unimplemented!()
     }
@@ -58,9 +58,9 @@ impl State {
         &mut self,
         card: Arc<Mutex<Card>>,
         old_controller: PlayerNumber,
-        old_location: Location,
+        old_zone: Zone,
         new_controller: PlayerNumber,
-        new_location: Location,
+        new_zone: Zone,
     ) {
         unimplemented!()
     }

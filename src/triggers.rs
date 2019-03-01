@@ -1,6 +1,6 @@
 use crate::bundle::*;
 use crate::card::Card;
-use crate::location::Location;
+use crate::zone::Zone;
 use crate::player::PlayerNumber;
 use crate::state::State;
 use std::fmt;
@@ -45,7 +45,7 @@ pub trait Trigger {
         bundle: &Bundle,
         card: Arc<Mutex<Card>>,
         controller: PlayerNumber,
-        location: Location,
+        zone: Zone,
     ) -> bool;
 
     fn try_execute(
@@ -54,7 +54,7 @@ pub trait Trigger {
         bundle: &mut Bundle,
         card: Arc<Mutex<Card>>,
         controller: PlayerNumber,
-        location: Location,
+        zone: Zone,
     ) -> bool;
 
     fn on_execute(
@@ -63,7 +63,7 @@ pub trait Trigger {
         bundle: &mut Bundle,
         card: Arc<Mutex<Card>>,
         controller: PlayerNumber,
-        location: Location,
+        zone: Zone,
     ) -> bool;
 }
 
@@ -101,7 +101,7 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlaye
         bundle: &Bundle,
         card: Arc<Mutex<Card>>,
         controller: PlayerNumber,
-        location: Location,
+        zone: Zone,
     ) -> bool {
         state.is_any_player_targetable_by(controller)
     }
@@ -112,7 +112,7 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlaye
         bundle: &mut Bundle,
         card: Arc<Mutex<Card>>,
         controller: PlayerNumber,
-        location: Location,
+        zone: Zone,
     ) -> bool {
         match state.select_target_player(controller) {
             Some(target_player) => {
@@ -131,7 +131,7 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlaye
         bundle: &mut Bundle,
         card: Arc<Mutex<Card>>,
         controller: PlayerNumber,
-        location: Location,
+        zone: Zone,
     ) -> bool {
         let target_player = bundle.map["target_player"].unwrap_player();
         if state.is_target_player_valid(target_player, controller) {
@@ -149,13 +149,13 @@ pub struct TriggerTargettingCreature<P, C> {
 
 impl<P, C> TriggerTargettingCreature<P, C>
 where
-    P: Fn(&State, &Card, PlayerNumber, Location) -> bool,
+    P: Fn(&State, &Card, PlayerNumber, Zone) -> bool,
     C: Fn(
         &mut State,
         /* card with the trigger */ Arc<Mutex<Card>>,
         /* target */ Arc<Mutex<Card>>,
         PlayerNumber,
-        Location,
+        Zone,
     ) -> bool,
 {
     pub fn new(predicate: P, callback: C) -> Self {
@@ -168,8 +168,8 @@ where
 
 impl<P, C> Trigger for TriggerTargettingCreature<P, C>
 where
-    P: Fn(&State, &Card, PlayerNumber, Location) -> bool,
-    C: Fn(&mut State, Arc<Mutex<Card>>, Arc<Mutex<Card>>, PlayerNumber, Location) -> bool,
+    P: Fn(&State, &Card, PlayerNumber, Zone) -> bool,
+    C: Fn(&mut State, Arc<Mutex<Card>>, Arc<Mutex<Card>>, PlayerNumber, Zone) -> bool,
 {
     fn can_execute(
         &self,
@@ -177,7 +177,7 @@ where
         bundle: &Bundle,
         card: Arc<Mutex<Card>>,
         controller: PlayerNumber,
-        location: Location,
+        zone: Zone,
     ) -> bool {
         state.is_any_card_targetable_by(controller, &self.predicate)
     }
@@ -188,7 +188,7 @@ where
         bundle: &mut Bundle,
         card: Arc<Mutex<Card>>,
         controller: PlayerNumber,
-        location: Location,
+        zone: Zone,
     ) -> bool {
         match state.select_target_card(controller, &self.predicate) {
             Some(target_card) => {
@@ -207,7 +207,7 @@ where
         bundle: &mut Bundle,
         card: Arc<Mutex<Card>>,
         controller: PlayerNumber,
-        location: Location,
+        zone: Zone,
     ) -> bool {
         let target_card = bundle.map["target_card"].unwrap_card();
         if state.is_target_card_valid(&*target_card.lock().unwrap(), controller, &self.predicate) {

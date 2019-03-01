@@ -1,5 +1,5 @@
 use crate::card::*;
-use crate::location::Location;
+use crate::zone::Zone;
 use crate::mana_cost::ManaCost;
 use crate::player::PlayerNumber;
 use crate::state::State;
@@ -22,7 +22,7 @@ pub fn animate_dead(owner: PlayerNumber) -> Card {
                     player,
                     location,
                     player,
-                    Location::Battlefield,
+                    Zone::Battlefield,
                 );
                 target_card.lock().unwrap().add_aura(card);
                 true
@@ -35,7 +35,7 @@ fn is_creature_in_graveyard(
     state: &State,
     card: &Card,
     controller: PlayerNumber,
-    location: Location,
+    zone: Zone,
 ) -> bool {
-    location == Location::Graveyard && card.types().contains(&Type::Creature)
+    zone == Zone::Graveyard && card.types().contains(&Type::Creature)
 }

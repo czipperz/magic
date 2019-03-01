@@ -17,7 +17,7 @@
 /// different controller and owner.  In the other locations, the
 /// controller must be the owner.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Location {
+pub enum Zone {
     Deck,
     Hand,
     Stack,
