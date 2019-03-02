@@ -1,5 +1,5 @@
 use crate::card::*;
-use crate::mana_cost::ManaCost;
+use crate::mana::ManaCost;
 use crate::player::PlayerNumber;
 use crate::triggers::*;
 

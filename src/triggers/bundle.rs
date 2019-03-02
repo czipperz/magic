@@ -1,5 +1,5 @@
 use crate::card::Card;
-use crate::color::Color;
+use crate::mana::Color;
 use crate::player::PlayerNumber;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
