@@ -1,6 +1,9 @@
 mod trigger;
 pub use self::trigger::*;
 
+mod bundle;
+pub use self::bundle::*;
+
 mod triggers;
 pub use self::triggers::*;
 

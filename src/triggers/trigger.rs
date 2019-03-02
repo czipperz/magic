@@ -1,4 +1,4 @@
-use crate::bundle::Bundle;
+use super::Bundle;
 use crate::card::Card;
 use crate::state::State;
 use std::sync::{Arc, Mutex};

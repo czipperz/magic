@@ -1,5 +1,4 @@
-use super::Trigger;
-use crate::bundle::*;
+use super::{Bundle, BundleItem, Trigger};
 use crate::card::Card;
 use crate::player::PlayerNumber;
 use crate::state::State;
