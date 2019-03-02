@@ -1,6 +1,5 @@
 use crate::bundle::*;
 use crate::card::Card;
-use crate::zone::Zone;
 use crate::player::PlayerNumber;
 use crate::state::State;
 use std::fmt;
@@ -39,32 +38,11 @@ pub struct Triggers {
 }
 
 pub trait Trigger {
-    fn can_execute(
-        &self,
-        state: &State,
-        bundle: &Bundle,
-        card: Arc<Mutex<Card>>,
-        controller: PlayerNumber,
-        zone: Zone,
-    ) -> bool;
+    fn can_execute(&self, state: &State, bundle: &Bundle, card: Arc<Mutex<Card>>) -> bool;
 
-    fn try_execute(
-        &self,
-        state: &mut State,
-        bundle: &mut Bundle,
-        card: Arc<Mutex<Card>>,
-        controller: PlayerNumber,
-        zone: Zone,
-    ) -> bool;
+    fn try_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool;
 
-    fn on_execute(
-        &self,
-        state: &mut State,
-        bundle: &mut Bundle,
-        card: Arc<Mutex<Card>>,
-        controller: PlayerNumber,
-        zone: Zone,
-    ) -> bool;
+    fn on_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool;
 }
 
 impl Triggers {
@@ -95,26 +73,12 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> TriggerTargettingPlayer<C> {
 }
 
 impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlayer<C> {
-    fn can_execute(
-        &self,
-        state: &State,
-        bundle: &Bundle,
-        card: Arc<Mutex<Card>>,
-        controller: PlayerNumber,
-        zone: Zone,
-    ) -> bool {
-        state.is_any_player_targetable_by(controller)
+    fn can_execute(&self, state: &State, bundle: &Bundle, card: Arc<Mutex<Card>>) -> bool {
+        state.is_any_player_targetable_by(card.lock().unwrap().controller())
     }
 
-    fn try_execute(
-        &self,
-        state: &mut State,
-        bundle: &mut Bundle,
-        card: Arc<Mutex<Card>>,
-        controller: PlayerNumber,
-        zone: Zone,
-    ) -> bool {
-        match state.select_target_player(controller) {
+    fn try_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
+        match state.select_target_player(card.lock().unwrap().controller()) {
             Some(target_player) => {
                 bundle
                     .map
@@ -125,16 +89,9 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlaye
         }
     }
 
-    fn on_execute(
-        &self,
-        state: &mut State,
-        bundle: &mut Bundle,
-        card: Arc<Mutex<Card>>,
-        controller: PlayerNumber,
-        zone: Zone,
-    ) -> bool {
+    fn on_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
         let target_player = bundle.map["target_player"].unwrap_player();
-        if state.is_target_player_valid(target_player, controller) {
+        if state.is_target_player_valid(target_player, card.lock().unwrap().controller()) {
             (self.callback)(state, target_player)
         } else {
             false
@@ -149,13 +106,11 @@ pub struct TriggerTargettingCreature<P, C> {
 
 impl<P, C> TriggerTargettingCreature<P, C>
 where
-    P: Fn(&State, &Card, PlayerNumber, Zone) -> bool,
+    P: Fn(&State, &Card) -> bool,
     C: Fn(
         &mut State,
         /* card with the trigger */ Arc<Mutex<Card>>,
         /* target */ Arc<Mutex<Card>>,
-        PlayerNumber,
-        Zone,
     ) -> bool,
 {
     pub fn new(predicate: P, callback: C) -> Self {
@@ -168,29 +123,15 @@ where
 
 impl<P, C> Trigger for TriggerTargettingCreature<P, C>
 where
-    P: Fn(&State, &Card, PlayerNumber, Zone) -> bool,
-    C: Fn(&mut State, Arc<Mutex<Card>>, Arc<Mutex<Card>>, PlayerNumber, Zone) -> bool,
+    P: Fn(&State, &Card) -> bool,
+    C: Fn(&mut State, Arc<Mutex<Card>>, Arc<Mutex<Card>>) -> bool,
 {
-    fn can_execute(
-        &self,
-        state: &State,
-        bundle: &Bundle,
-        card: Arc<Mutex<Card>>,
-        controller: PlayerNumber,
-        zone: Zone,
-    ) -> bool {
-        state.is_any_card_targetable_by(controller, &self.predicate)
+    fn can_execute(&self, state: &State, bundle: &Bundle, card: Arc<Mutex<Card>>) -> bool {
+        state.is_any_card_targetable_by(card.lock().unwrap().controller(), &self.predicate)
     }
 
-    fn try_execute(
-        &self,
-        state: &mut State,
-        bundle: &mut Bundle,
-        card: Arc<Mutex<Card>>,
-        controller: PlayerNumber,
-        zone: Zone,
-    ) -> bool {
-        match state.select_target_card(controller, &self.predicate) {
+    fn try_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
+        match state.select_target_card(card.lock().unwrap().controller(), &self.predicate) {
             Some(target_card) => {
                 bundle
                     .map
@@ -201,17 +142,14 @@ where
         }
     }
 
-    fn on_execute(
-        &self,
-        state: &mut State,
-        bundle: &mut Bundle,
-        card: Arc<Mutex<Card>>,
-        controller: PlayerNumber,
-        zone: Zone,
-    ) -> bool {
+    fn on_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
         let target_card = bundle.map["target_card"].unwrap_card();
-        if state.is_target_card_valid(&*target_card.lock().unwrap(), controller, &self.predicate) {
-            (self.callback)(state, card, target_card, unimplemented!(), unimplemented!())
+        if target_card.lock().unwrap().is_valid_target(
+            state,
+            card.lock().unwrap().controller(),
+            &self.predicate,
+        ) {
+            (self.callback)(state, card, target_card)
         } else {
             false
         }

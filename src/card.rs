@@ -1,12 +1,16 @@
 use crate::mana_cost::ManaCost;
 use crate::player::PlayerNumber;
+use crate::state::State;
 use crate::triggers::Triggers;
+use crate::zone::Zone;
 use std::sync::{Arc, Mutex};
 
 #[derive(Clone, Debug)]
 pub struct Card {
     name: String,
     owner: PlayerNumber,
+    controller: PlayerNumber,
+    zone: Zone,
     base_mana_cost: ManaCost,
     base_types: Vec<Type>,
     base_subtypes: Vec<Subtype>,
@@ -48,6 +52,8 @@ impl Card {
         Card {
             name,
             owner,
+            controller: owner,
+            zone: Zone::Deck,
             base_mana_cost,
             base_types,
             base_subtypes: Vec::new(),
@@ -64,6 +70,12 @@ impl Card {
     }
     pub fn owner(&self) -> PlayerNumber {
         self.owner
+    }
+    pub fn controller(&self) -> PlayerNumber {
+        self.controller
+    }
+    pub fn zone(&self) -> Zone {
+        self.zone
     }
     pub fn mana_cost(&self) -> ManaCost {
         self.base_mana_cost.clone()
@@ -90,7 +102,18 @@ impl Card {
     pub fn cast_allows_responses(&self) -> bool {
         self.is_spell()
     }
+    pub fn is_valid_target(
+        &self,
+        state: &State,
+        controller: PlayerNumber,
+        predicate: &impl Fn(&State, &Card) -> bool,
+    ) -> bool {
+        unimplemented!()
+    }
 
+    pub fn move_to_zone(&mut self, new_zone: Zone) {
+        self.zone = new_zone;
+    }
     pub fn add_aura(&mut self, aura: Arc<Mutex<Card>>) {
         assert!(aura.lock().unwrap().subtypes().contains(&Subtype::Aura));
         self.auras.push(aura);

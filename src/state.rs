@@ -1,5 +1,4 @@
 use crate::card::Card;
-use crate::zone::Zone;
 use crate::player::*;
 use crate::user_interface::UserInterface;
 use std::sync::{Arc, Mutex};
@@ -32,16 +31,7 @@ impl State {
     pub fn is_any_card_targetable_by(
         &self,
         controller: PlayerNumber,
-        predicate: &impl Fn(&State, &Card, PlayerNumber, Zone) -> bool,
-    ) -> bool {
-        unimplemented!()
-    }
-
-    pub fn is_target_card_valid(
-        &self,
-        card: &Card,
-        controller: PlayerNumber,
-        predicate: &impl Fn(&State, &Card, PlayerNumber, Zone) -> bool,
+        predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
         unimplemented!()
     }
@@ -49,19 +39,8 @@ impl State {
     pub fn select_target_card(
         &mut self,
         controller: PlayerNumber,
-        predicate: &impl Fn(&State, &Card, PlayerNumber, Zone) -> bool,
+        predicate: &impl Fn(&State, &Card) -> bool,
     ) -> Option<Arc<Mutex<Card>>> {
-        unimplemented!()
-    }
-
-    pub fn move_card(
-        &mut self,
-        card: Arc<Mutex<Card>>,
-        old_controller: PlayerNumber,
-        old_zone: Zone,
-        new_controller: PlayerNumber,
-        new_zone: Zone,
-    ) {
         unimplemented!()
     }
 }

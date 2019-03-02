@@ -16,7 +16,7 @@
 /// A card in the locations `Stack` and `Battlefield` can have a
 /// different controller and owner.  In the other locations, the
 /// controller must be the owner.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Zone {
     Deck,
     Hand,
