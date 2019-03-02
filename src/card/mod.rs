@@ -93,7 +93,7 @@ impl Card {
         controller: PlayerNumber,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
-        unimplemented!()
+        predicate(state, self)
     }
 
     pub fn move_to_zone(&mut self, new_zone: Zone) {

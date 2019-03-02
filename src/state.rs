@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 pub struct State {
     players: Vec<Player>,
     stack: Vec<Arc<Mutex<Card>>>,
-    ui: UserInterface,
+    ui: Arc<Mutex<UserInterface>>,
 }
 
 impl State {
@@ -21,19 +21,26 @@ impl State {
     }
 
     pub fn select_target_player(&mut self, controller: PlayerNumber) -> Option<PlayerNumber> {
-        unimplemented!()
+        self.ui.lock().unwrap().select_player(self)
     }
 
     pub fn make_player_draw_cards(&mut self, player: PlayerNumber, cards: usize) {
-        unimplemented!()
+        // TODO: implement draw card triggers
+        // TODO: implement losing when out of cards (Err returned)
+        self.players[player].draw_cards(cards).unwrap();
     }
 
-    pub fn is_any_card_targetable_by(
+    pub fn is_any_permanent_targetable_by(
         &self,
         controller: PlayerNumber,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
-        unimplemented!()
+        for i in 0..self.players.len() {
+            if self.players[i].is_any_permanent_targetable_by(self, controller, predicate) {
+                return true;
+            }
+        }
+        false
     }
 
     pub fn select_target_card(
@@ -41,6 +48,7 @@ impl State {
         controller: PlayerNumber,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> Option<Arc<Mutex<Card>>> {
-        unimplemented!()
+        // TODO: implement hexproof and shroud for cards
+        self.ui.lock().unwrap().select_card(self, predicate)
     }
 }
