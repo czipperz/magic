@@ -1,6 +1,6 @@
 use crate::card::Card;
 use crate::player::*;
-use crate::user_interface::UserInterface;
+use crate::ui::UserInterface;
 use std::sync::{Arc, Mutex};
 
 pub struct State {
@@ -10,6 +10,14 @@ pub struct State {
 }
 
 impl State {
+    pub fn new(decks: Vec<Vec<Arc<Mutex<Card>>>>, ui: impl UserInterface + 'static) -> Self {
+        State {
+            players: decks.into_iter().map(Player::new).collect(),
+            stack: Vec::new(),
+            ui: Arc::new(Mutex::new(ui)),
+        }
+    }
+
     pub fn is_any_player_targetable_by(&self, controller: PlayerNumber) -> bool {
         // TODO: implement hexproof and shroud for players
         true

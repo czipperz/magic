@@ -16,7 +16,10 @@ pub fn animate_artifact(owner: PlayerNumber) -> Card {
         Triggers::new().with_cast_triggers(TriggerTargettingCreature::new(
             is_artifact_on_battlefield,
             |_, card, target_card| {
-                target_card.lock().unwrap().add_aura(card);
+                target_card
+                    .lock()
+                    .unwrap()
+                    .add_aura(Aura::new(card, AnimateArtifactDecoration));
                 true
             },
         )),
@@ -24,5 +27,33 @@ pub fn animate_artifact(owner: PlayerNumber) -> Card {
 }
 
 fn is_artifact_on_battlefield(state: &State, card: &Card) -> bool {
-    card.zone() == Zone::Battlefield && card.types().contains(&Type::Artifact)
+    card.zone(state) == Zone::Battlefield && card.types(state).contains(&Type::Artifact)
+}
+
+#[derive(Debug)]
+struct AnimateArtifactDecoration;
+
+impl CardDecoration for AnimateArtifactDecoration {
+    fn decorate_types(&self, state: &State, card: &Card, mut types: Vec<Type>) -> Vec<Type> {
+        if !types.contains(&Type::Creature) {
+            types.push(Type::Creature);
+        }
+        types
+    }
+
+    fn decorate_power(&self, state: &State, card: &Card, power: usize) -> usize {
+        if !card.types(state).contains(&Type::Creature) {
+            card.converted_mana_cost(state)
+        } else {
+            power
+        }
+    }
+
+    fn decorate_toughness(&self, state: &State, card: &Card, toughness: usize) -> usize {
+        if !card.types(state).contains(&Type::Creature) {
+            card.converted_mana_cost(state)
+        } else {
+            toughness
+        }
+    }
 }

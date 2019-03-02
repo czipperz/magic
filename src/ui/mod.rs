@@ -12,3 +12,6 @@ pub trait UserInterface {
         predicate: &Fn(&State, &Card) -> bool,
     ) -> Option<Arc<Mutex<Card>>>;
 }
+
+mod testing;
+pub use self::testing::*;
