@@ -96,8 +96,12 @@ impl Card {
         predicate(state, self)
     }
 
-    pub fn move_to_zone(&mut self, new_zone: Zone) {
-        self.zone = new_zone;
+    pub fn move_to(&mut self, controller: PlayerNumber, zone: Zone) {
+        if controller != self.owner() {
+            assert_eq!(zone, Zone::Battlefield);
+        }
+        self.controller = controller;
+        self.zone = zone;
     }
     pub fn add_aura(&mut self, aura: Arc<Mutex<Card>>) {
         assert!(aura.lock().unwrap().subtypes().contains(&Subtype::Aura));

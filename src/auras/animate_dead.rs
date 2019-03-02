@@ -17,7 +17,8 @@ pub fn animate_dead(owner: PlayerNumber) -> Card {
             is_creature_in_graveyard,
             |state, card, target_card| {
                 let mut target_card = target_card.lock().unwrap();
-                target_card.move_to_zone(Zone::Battlefield);
+                let player = target_card.owner();
+                target_card.move_to(player, Zone::Battlefield);
                 target_card.add_aura(card);
                 true
             },
