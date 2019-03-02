@@ -1,7 +1,5 @@
-pub mod auras;
 pub mod card;
-pub mod creatures;
-pub mod instants;
+pub mod cards;
 pub mod mana;
 pub mod player;
 pub mod state;
