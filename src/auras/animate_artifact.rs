@@ -3,7 +3,6 @@ use crate::mana::ManaCost;
 use crate::player::PlayerNumber;
 use crate::state::State;
 use crate::triggers::*;
-use crate::zone::Zone;
 
 pub fn animate_artifact(owner: PlayerNumber) -> Card {
     Card::new(

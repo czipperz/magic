@@ -1,9 +1,14 @@
-use crate::mana_cost::ManaCost;
+use crate::mana::ManaCost;
 use crate::player::PlayerNumber;
 use crate::state::State;
 use crate::triggers::Triggers;
-use crate::zone::Zone;
 use std::sync::{Arc, Mutex};
+
+mod zone;
+pub use self::zone::*;
+
+mod attrs;
+pub use self::attrs::*;
 
 #[derive(Clone, Debug)]
 pub struct Card {
@@ -19,26 +24,6 @@ pub struct Card {
     base_toughness: usize,
     base_triggers: Triggers,
     auras: Vec<Arc<Mutex<Card>>>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Type {
-    Artifact,
-    Creature,
-    Enchantment,
-    Instant,
-    Land,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Subtype {
-    Aura,
-    Elemental,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Attribute {
-    Flying,
 }
 
 impl Card {

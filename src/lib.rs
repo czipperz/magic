@@ -7,7 +7,6 @@ pub mod player;
 pub mod state;
 pub mod triggers;
 pub mod user_interface;
-pub mod zone;
 
 pub fn run_main() -> Result<(), String> {
     Ok(())
