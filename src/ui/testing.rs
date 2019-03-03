@@ -14,15 +14,15 @@ impl TestingUI {
 }
 
 impl UserInterface for TestingUI {
-    fn select_player(&mut self, state: &State, source: &Source) -> Option<PlayerNumber> {
+    fn select_player(&mut self, _state: &State, _source: &Source) -> Option<PlayerNumber> {
         unimplemented!()
     }
 
     fn select_card(
         &mut self,
-        state: &State,
-        source: &Source,
-        predicate: &Fn(&State, &Card) -> bool,
+        _state: &State,
+        _source: &Source,
+        _predicate: &Fn(&State, &Card) -> bool,
     ) -> Option<Arc<Mutex<Card>>> {
         unimplemented!()
     }

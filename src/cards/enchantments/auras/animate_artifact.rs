@@ -19,7 +19,7 @@ pub fn animate_artifact(owner: PlayerNumber) -> Card {
                 target_card
                     .lock()
                     .unwrap()
-                    .add_aura(card, |state, card, card_state| {
+                    .add_aura(card, |_, _, card_state| {
                         if !card_state.types.contains(&Type::Creature) {
                             card_state.types.push(Type::Creature);
                             card_state.power = card_state.mana_cost.converted();

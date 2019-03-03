@@ -16,7 +16,7 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> TriggerTargettingPlayer<C> {
 }
 
 impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlayer<C> {
-    fn can_execute(&self, state: &State, bundle: &Bundle, card: Arc<Mutex<Card>>) -> bool {
+    fn can_execute(&self, state: &State, _: &Bundle, card: Arc<Mutex<Card>>) -> bool {
         state.is_any_player_targetable_by(&Source::from_card(state, card))
     }
 

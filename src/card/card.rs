@@ -106,7 +106,7 @@ impl Card {
     pub fn is_valid_target(
         &self,
         state: &State,
-        source: &Source,
+        _source: &Source,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
         predicate(state, self)

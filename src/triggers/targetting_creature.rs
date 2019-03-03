@@ -31,7 +31,7 @@ where
     P: Fn(&State, &Card) -> bool,
     C: Fn(&mut State, Arc<Mutex<Card>>, Arc<Mutex<Card>>) -> bool,
 {
-    fn can_execute(&self, state: &State, bundle: &Bundle, card: Arc<Mutex<Card>>) -> bool {
+    fn can_execute(&self, state: &State, _: &Bundle, card: Arc<Mutex<Card>>) -> bool {
         state.is_any_permanent_targetable_by(&Source::from_card(state, card), &self.predicate)
     }
 
