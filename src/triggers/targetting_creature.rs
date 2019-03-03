@@ -32,11 +32,11 @@ where
 {
     fn can_execute(&self, state: &State, bundle: &Bundle, card: Arc<Mutex<Card>>) -> bool {
         state
-            .is_any_permanent_targetable_by(card.lock().unwrap().controller(state), &self.predicate)
+            .is_any_permanent_targetable_by(&card.lock().unwrap().as_source(state), &self.predicate)
     }
 
     fn try_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
-        match state.select_target_card(card.lock().unwrap().controller(state), &self.predicate) {
+        match state.select_target_card(&card.lock().unwrap().as_source(state), &self.predicate) {
             Some(target_card) => {
                 bundle
                     .map
@@ -51,7 +51,7 @@ where
         let target_card = bundle.map["target_card"].unwrap_card();
         if target_card.lock().unwrap().is_valid_target(
             state,
-            card.lock().unwrap().controller(state),
+            &card.lock().unwrap().as_source(state),
             &self.predicate,
         ) {
             (self.callback)(state, card, target_card)

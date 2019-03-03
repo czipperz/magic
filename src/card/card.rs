@@ -1,7 +1,8 @@
 use super::aura::Aura;
 use super::*;
-use crate::mana::ManaCost;
+use crate::mana::*;
 use crate::player::PlayerNumber;
+use crate::source::Source;
 use crate::state::State;
 use crate::triggers::Triggers;
 use std::sync::{Arc, Mutex};
@@ -22,6 +23,7 @@ pub struct Card {
     auras: Vec<Aura>,
 }
 
+// constructors
 impl Card {
     pub fn new(
         name: String,
@@ -45,7 +47,10 @@ impl Card {
             auras: Vec::new(),
         }
     }
+}
 
+// getters
+impl Card {
     pub fn name(&self) -> &str {
         &self.name
     }
@@ -108,27 +113,63 @@ impl Card {
         }
         toughness
     }
+}
 
+// colors
+impl Card {
     pub fn converted_mana_cost(&self, state: &State) -> usize {
         let mana_cost = self.mana_cost(state);
         mana_cost.blue + mana_cost.white + mana_cost.green + mana_cost.red + mana_cost.black
     }
 
+    pub fn colors(&self, state: &State) -> Vec<Color> {
+        let mana_cost = self.mana_cost(state);
+        let mut colors = Vec::new();
+        if mana_cost.blue != 0 {
+            colors.push(Color::Blue);
+        }
+        if mana_cost.white != 0 {
+            colors.push(Color::White);
+        }
+        if mana_cost.green != 0 {
+            colors.push(Color::Green);
+        }
+        if mana_cost.red != 0 {
+            colors.push(Color::Red);
+        }
+        if mana_cost.black != 0 {
+            colors.push(Color::Black);
+        }
+        colors
+    }
+}
+
+// predicates
+impl Card {
     pub fn is_spell(&self, state: &State) -> bool {
         !self.types(state).contains(&Type::Land)
     }
+
     pub fn cast_allows_responses(&self, state: &State) -> bool {
         self.is_spell(state)
     }
+
     pub fn is_valid_target(
         &self,
         state: &State,
-        controller: PlayerNumber,
+        source: &Source,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
         predicate(state, self)
     }
 
+    pub fn as_source(&self, state: &State) -> Source {
+        Source::from_card(state, self)
+    }
+}
+
+// modifiers
+impl Card {
     pub fn move_to(&mut self, controller: PlayerNumber, zone: Zone) {
         if controller != self.owner() {
             assert_eq!(zone, Zone::Battlefield);
@@ -136,6 +177,7 @@ impl Card {
         self.controller = controller;
         self.zone = zone;
     }
+
     pub fn add_aura(&mut self, card: Arc<Mutex<Card>>, decoration: impl CardDecoration + 'static) {
         // assert!(card
         //     .lock()
@@ -147,7 +189,10 @@ impl Card {
             decoration: Box::new(decoration),
         });
     }
+}
 
+// builder
+impl Card {
     pub fn with_base_subtypes(mut self, subtypes: Vec<Subtype>) -> Self {
         self.base_subtypes = subtypes;
         self

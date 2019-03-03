@@ -1,4 +1,5 @@
 use crate::card::Card;
+use crate::source::Source;
 use crate::state::State;
 use std::sync::{Arc, Mutex};
 
@@ -33,7 +34,7 @@ impl Player {
     pub fn is_any_permanent_targetable_by(
         &self,
         state: &State,
-        controller: PlayerNumber,
+        source: &Source,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
         // TODO: implement hexproof and shroud for cards
@@ -44,7 +45,7 @@ impl Player {
             .any(|card| {
                 card.lock()
                     .unwrap()
-                    .is_valid_target(state, controller, predicate)
+                    .is_valid_target(state, source, predicate)
             })
     }
 }

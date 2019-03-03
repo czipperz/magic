@@ -16,11 +16,11 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> TriggerTargettingPlayer<C> {
 
 impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlayer<C> {
     fn can_execute(&self, state: &State, bundle: &Bundle, card: Arc<Mutex<Card>>) -> bool {
-        state.is_any_player_targetable_by(card.lock().unwrap().controller(state))
+        state.is_any_player_targetable_by(&card.lock().unwrap().as_source(state))
     }
 
     fn try_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
-        match state.select_target_player(card.lock().unwrap().controller(state)) {
+        match state.select_target_player(&card.lock().unwrap().as_source(state)) {
             Some(target_player) => {
                 bundle
                     .map
@@ -33,7 +33,7 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlaye
 
     fn on_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
         let target_player = bundle.map["target_player"].unwrap_player();
-        if state.is_target_player_valid(target_player, card.lock().unwrap().controller(state)) {
+        if state.is_target_player_valid(&card.lock().unwrap().as_source(state), target_player) {
             (self.callback)(state, target_player)
         } else {
             false

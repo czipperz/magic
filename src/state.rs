@@ -1,5 +1,6 @@
 use crate::card::Card;
 use crate::player::*;
+use crate::source::Source;
 use crate::ui::UserInterface;
 use std::sync::{Arc, Mutex};
 
@@ -18,18 +19,18 @@ impl State {
         }
     }
 
-    pub fn is_any_player_targetable_by(&self, controller: PlayerNumber) -> bool {
+    pub fn is_any_player_targetable_by(&self, source: &Source) -> bool {
         // TODO: implement hexproof and shroud for players
         true
     }
 
-    pub fn is_target_player_valid(&self, controller: PlayerNumber, target: PlayerNumber) -> bool {
+    pub fn is_target_player_valid(&self, source: &Source, target: PlayerNumber) -> bool {
         // TODO: implement hexproof and shroud for players
         true
     }
 
-    pub fn select_target_player(&mut self, controller: PlayerNumber) -> Option<PlayerNumber> {
-        self.ui.lock().unwrap().select_player(self)
+    pub fn select_target_player(&mut self, source: &Source) -> Option<PlayerNumber> {
+        self.ui.lock().unwrap().select_player(self, source)
     }
 
     pub fn make_player_draw_cards(&mut self, player: PlayerNumber, cards: usize) {
@@ -40,11 +41,11 @@ impl State {
 
     pub fn is_any_permanent_targetable_by(
         &self,
-        controller: PlayerNumber,
+        source: &Source,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
         for i in 0..self.players.len() {
-            if self.players[i].is_any_permanent_targetable_by(self, controller, predicate) {
+            if self.players[i].is_any_permanent_targetable_by(self, source, predicate) {
                 return true;
             }
         }
@@ -53,10 +54,10 @@ impl State {
 
     pub fn select_target_card(
         &mut self,
-        controller: PlayerNumber,
+        source: &Source,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> Option<Arc<Mutex<Card>>> {
         // TODO: implement hexproof and shroud for cards
-        self.ui.lock().unwrap().select_card(self, predicate)
+        self.ui.lock().unwrap().select_card(self, source, predicate)
     }
 }
