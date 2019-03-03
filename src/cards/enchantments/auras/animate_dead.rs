@@ -19,7 +19,7 @@ pub fn animate_dead(owner: PlayerNumber) -> Card {
                 let mut target_card = target_card.lock().unwrap();
                 let player = card.lock().unwrap().controller(state);
                 target_card.move_to(player, Zone::Battlefield);
-                target_card.add_aura(Aura::new(card, AnimateDeadDecoration));
+                target_card.add_aura(card, AnimateDeadDecoration);
                 true
             },
         )),

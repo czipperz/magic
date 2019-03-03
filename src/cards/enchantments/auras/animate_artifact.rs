@@ -19,7 +19,7 @@ pub fn animate_artifact(owner: PlayerNumber) -> Card {
                 target_card
                     .lock()
                     .unwrap()
-                    .add_aura(Aura::new(card, AnimateArtifactDecoration));
+                    .add_aura(card, AnimateArtifactDecoration);
                 true
             },
         )),

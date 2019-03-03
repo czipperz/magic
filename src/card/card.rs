@@ -1,8 +1,10 @@
+use super::aura::Aura;
 use super::*;
 use crate::mana::ManaCost;
 use crate::player::PlayerNumber;
 use crate::state::State;
 use crate::triggers::Triggers;
+use std::sync::{Arc, Mutex};
 
 #[derive(Debug)]
 pub struct Card {
@@ -134,14 +136,16 @@ impl Card {
         self.controller = controller;
         self.zone = zone;
     }
-    pub fn add_aura(&mut self, aura: Aura) {
-        // assert!(aura
-        //     .card
+    pub fn add_aura(&mut self, card: Arc<Mutex<Card>>, decoration: impl CardDecoration + 'static) {
+        // assert!(card
         //     .lock()
         //     .unwrap()
         //     .subtypes()
         //     .contains(&Subtype::Aura));
-        self.auras.push(aura);
+        self.auras.push(Aura {
+            card,
+            decoration: Box::new(decoration),
+        });
     }
 
     pub fn with_base_subtypes(mut self, subtypes: Vec<Subtype>) -> Self {
