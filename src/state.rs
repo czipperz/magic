@@ -56,7 +56,6 @@ impl State {
         source: &Source,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> Option<Arc<Mutex<Card>>> {
-        // TODO: implement hexproof and shroud for cards
         self.ui.lock().unwrap().select_card(self, source, predicate)
     }
 }

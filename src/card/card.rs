@@ -109,6 +109,7 @@ impl Card {
         _source: &Source,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
+        // TODO: implement hexproof and shroud for cards
         predicate(state, self)
     }
 }

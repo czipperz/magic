@@ -37,7 +37,6 @@ impl Player {
         source: &Source,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
-        // TODO: implement hexproof and shroud for cards
         self.battlefield
             .iter()
             .chain(self.graveyard.iter())
