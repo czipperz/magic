@@ -20,8 +20,7 @@ impl State {
     }
 
     pub fn is_any_player_targetable_by(&self, source: &Source) -> bool {
-        // TODO: implement hexproof and shroud for players
-        true
+        (0..self.players.len()).any(|p| self.is_target_player_valid(source, p))
     }
 
     pub fn is_target_player_valid(&self, source: &Source, target: PlayerNumber) -> bool {
