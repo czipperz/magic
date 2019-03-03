@@ -6,8 +6,8 @@ pub use self::attrs::*;
 
 mod aura;
 
-mod decoration;
-pub use self::decoration::*;
+mod card_state;
+pub use self::card_state::*;
 
 mod card;
 pub use self::card::*;

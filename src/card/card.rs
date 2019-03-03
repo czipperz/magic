@@ -11,16 +11,8 @@ use std::sync::{Arc, Mutex};
 pub struct Card {
     name: String,
     owner: PlayerNumber,
-    controller: PlayerNumber,
-    zone: Zone,
-    base_mana_cost: ManaCost,
-    base_types: Vec<Type>,
-    base_subtypes: Vec<Subtype>,
-    base_attributes: Vec<Attribute>,
-    base_power: usize,
-    base_toughness: usize,
-    base_triggers: Triggers,
     auras: Vec<Aura>,
+    base_state: CardState,
 }
 
 // constructors
@@ -35,15 +27,17 @@ impl Card {
         Card {
             name,
             owner,
-            controller: owner,
-            zone: Zone::Deck,
-            base_mana_cost,
-            base_types,
-            base_subtypes: Vec::new(),
-            base_attributes: Vec::new(),
-            base_power: 0,
-            base_toughness: 0,
-            base_triggers: Triggers::new(),
+            base_state: CardState {
+                controller: owner,
+                zone: Zone::Deck,
+                mana_cost: base_mana_cost,
+                types: base_types,
+                subtypes: Vec::new(),
+                attributes: Vec::new(),
+                power: 0,
+                toughness: 0,
+                triggers: Triggers::new(),
+            },
             auras: Vec::new(),
         }
     }
@@ -57,90 +51,45 @@ impl Card {
     pub fn owner(&self) -> PlayerNumber {
         self.owner
     }
-    pub fn controller(&self, state: &State) -> PlayerNumber {
-        let mut controller = self.controller;
+
+    pub fn state(&self, state: &State) -> CardState {
+        let mut card_state = self.base_state.clone();
         for aura in &self.auras {
-            controller = aura.decoration.decorate_controller(state, self, controller);
+            aura.decorate_card_state(state, self, &mut card_state);
         }
-        controller
+        card_state
+    }
+
+    pub fn controller(&self, state: &State) -> PlayerNumber {
+        self.state(state).controller
     }
     pub fn zone(&self, state: &State) -> Zone {
-        let mut zone = self.zone;
-        for aura in &self.auras {
-            zone = aura.decoration.decorate_zone(state, self, zone);
-        }
-        zone
+        self.state(state).zone
     }
     pub fn mana_cost(&self, state: &State) -> ManaCost {
-        let mut mana_cost = self.base_mana_cost.clone();
-        for aura in &self.auras {
-            mana_cost = aura.decoration.decorate_mana_cost(state, self, mana_cost);
-        }
-        mana_cost
+        self.state(state).mana_cost
     }
     pub fn types(&self, state: &State) -> Vec<Type> {
-        let mut types = self.base_types.clone();
-        for aura in &self.auras {
-            types = aura.decoration.decorate_types(state, self, types);
-        }
-        types
+        self.state(state).types
     }
     pub fn subtypes(&self, state: &State) -> Vec<Subtype> {
-        let mut subtypes = self.base_subtypes.clone();
-        for aura in &self.auras {
-            subtypes = aura.decoration.decorate_subtypes(state, self, subtypes);
-        }
-        subtypes
+        self.state(state).subtypes
     }
     pub fn attributes(&self, state: &State) -> Vec<Attribute> {
-        let mut attributes = self.base_attributes.clone();
-        for aura in &self.auras {
-            attributes = aura.decoration.decorate_attributes(state, self, attributes);
-        }
-        attributes
+        self.state(state).attributes
     }
     pub fn power(&self, state: &State) -> usize {
-        let mut power = self.base_power;
-        for aura in &self.auras {
-            power = aura.decoration.decorate_power(state, self, power);
-        }
-        power
+        self.state(state).power
     }
     pub fn toughness(&self, state: &State) -> usize {
-        let mut toughness = self.base_toughness;
-        for aura in &self.auras {
-            toughness = aura.decoration.decorate_toughness(state, self, toughness);
-        }
-        toughness
+        self.state(state).toughness
     }
 }
 
 // colors
 impl Card {
-    pub fn converted_mana_cost(&self, state: &State) -> usize {
-        let mana_cost = self.mana_cost(state);
-        mana_cost.blue + mana_cost.white + mana_cost.green + mana_cost.red + mana_cost.black
-    }
-
     pub fn colors(&self, state: &State) -> Vec<Color> {
-        let mana_cost = self.mana_cost(state);
-        let mut colors = Vec::new();
-        if mana_cost.blue != 0 {
-            colors.push(Color::Blue);
-        }
-        if mana_cost.white != 0 {
-            colors.push(Color::White);
-        }
-        if mana_cost.green != 0 {
-            colors.push(Color::Green);
-        }
-        if mana_cost.red != 0 {
-            colors.push(Color::Red);
-        }
-        if mana_cost.black != 0 {
-            colors.push(Color::Black);
-        }
-        colors
+        self.mana_cost(state).colors()
     }
 }
 
@@ -170,16 +119,21 @@ impl Card {
         if controller != self.owner() {
             assert_eq!(zone, Zone::Battlefield);
         }
-        self.controller = controller;
-        self.zone = zone;
+        self.base_state.controller = controller;
+        self.base_state.zone = zone;
     }
 
-    pub fn add_aura(&mut self, card: Arc<Mutex<Card>>, decoration: impl CardDecoration + 'static) {
-        // assert!(card
-        //     .lock()
-        //     .unwrap()
-        //     .subtypes()
-        //     .contains(&Subtype::Aura));
+    pub fn add_aura(
+        &mut self,
+        card: Arc<Mutex<Card>>,
+        decoration: impl Fn(&State, &Card, &mut CardState) + 'static,
+    ) {
+        assert!(card
+            .lock()
+            .unwrap()
+            .base_state
+            .subtypes
+            .contains(&Subtype::Aura));
         self.auras.push(Aura {
             card,
             decoration: Box::new(decoration),
@@ -190,23 +144,23 @@ impl Card {
 // builder
 impl Card {
     pub fn with_base_subtypes(mut self, subtypes: Vec<Subtype>) -> Self {
-        self.base_subtypes = subtypes;
+        self.base_state.subtypes = subtypes;
         self
     }
     pub fn with_base_attributes(mut self, attributes: Vec<Attribute>) -> Self {
-        self.base_attributes = attributes;
+        self.base_state.attributes = attributes;
         self
     }
     pub fn with_base_power(mut self, power: usize) -> Self {
-        self.base_power = power;
+        self.base_state.power = power;
         self
     }
     pub fn with_base_toughness(mut self, toughness: usize) -> Self {
-        self.base_toughness = toughness;
+        self.base_state.toughness = toughness;
         self
     }
     pub fn with_base_triggers(mut self, triggers: Triggers) -> Self {
-        self.base_triggers = triggers;
+        self.base_state.triggers = triggers;
         self
     }
 }
