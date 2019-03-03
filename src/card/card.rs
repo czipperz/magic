@@ -162,10 +162,6 @@ impl Card {
     ) -> bool {
         predicate(state, self)
     }
-
-    pub fn as_source(&self, state: &State) -> Source {
-        Source::from_card(state, self)
-    }
 }
 
 // modifiers

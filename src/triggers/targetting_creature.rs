@@ -1,5 +1,6 @@
 use super::{Bundle, BundleItem, Trigger};
 use crate::card::Card;
+use crate::source::Source;
 use crate::state::State;
 use std::sync::{Arc, Mutex};
 
@@ -31,12 +32,11 @@ where
     C: Fn(&mut State, Arc<Mutex<Card>>, Arc<Mutex<Card>>) -> bool,
 {
     fn can_execute(&self, state: &State, bundle: &Bundle, card: Arc<Mutex<Card>>) -> bool {
-        state
-            .is_any_permanent_targetable_by(&card.lock().unwrap().as_source(state), &self.predicate)
+        state.is_any_permanent_targetable_by(&Source::from_card(state, card), &self.predicate)
     }
 
     fn try_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
-        match state.select_target_card(&card.lock().unwrap().as_source(state), &self.predicate) {
+        match state.select_target_card(&Source::from_card(state, card), &self.predicate) {
             Some(target_card) => {
                 bundle
                     .map
@@ -51,7 +51,7 @@ where
         let target_card = bundle.map["target_card"].unwrap_card();
         if target_card.lock().unwrap().is_valid_target(
             state,
-            &card.lock().unwrap().as_source(state),
+            &Source::from_card(state, card.clone()),
             &self.predicate,
         ) {
             (self.callback)(state, card, target_card)

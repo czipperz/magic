@@ -1,6 +1,7 @@
 use super::{Bundle, BundleItem, Trigger};
 use crate::card::Card;
 use crate::player::PlayerNumber;
+use crate::source::Source;
 use crate::state::State;
 use std::sync::{Arc, Mutex};
 
@@ -16,11 +17,11 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> TriggerTargettingPlayer<C> {
 
 impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlayer<C> {
     fn can_execute(&self, state: &State, bundle: &Bundle, card: Arc<Mutex<Card>>) -> bool {
-        state.is_any_player_targetable_by(&card.lock().unwrap().as_source(state))
+        state.is_any_player_targetable_by(&Source::from_card(state, card))
     }
 
     fn try_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
-        match state.select_target_player(&card.lock().unwrap().as_source(state)) {
+        match state.select_target_player(&Source::from_card(state, card)) {
             Some(target_player) => {
                 bundle
                     .map
@@ -33,7 +34,7 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlaye
 
     fn on_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
         let target_player = bundle.map["target_player"].unwrap_player();
-        if state.is_target_player_valid(&card.lock().unwrap().as_source(state), target_player) {
+        if state.is_target_player_valid(&Source::from_card(state, card), target_player) {
             (self.callback)(state, target_player)
         } else {
             false
