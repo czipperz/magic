@@ -23,7 +23,7 @@ pub fn animate_artifact(owner: PlayerNumber) -> Arc<Mutex<Card>> {
                     if !card_state.types.contains(&Type::Creature) {
                         card_state.types.push(Type::Creature);
                         card_state.power = card_state.mana_cost.converted();
-                        card_state.toughness = card_state.mana_cost.converted();
+                        card_state.toughness = card_state.power;
                     }
                 }),
             ),
