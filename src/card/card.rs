@@ -106,11 +106,19 @@ impl Card {
     pub fn is_valid_target(
         &self,
         state: &State,
-        _source: &Source,
+        source: &Source,
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
-        // TODO: implement hexproof and shroud for cards
-        predicate(state, self)
+        let card_state = self.state(state);
+        if card_state.attributes.contains(&Attribute::Shroud) {
+            false
+        } else if card_state.attributes.contains(&Attribute::Hexproof)
+            && source.player != card_state.controller
+        {
+            false
+        } else {
+            predicate(state, self)
+        }
     }
 }
 

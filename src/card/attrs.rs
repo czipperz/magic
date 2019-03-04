@@ -16,4 +16,6 @@ pub enum Subtype {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Attribute {
     Flying,
+    Hexproof,
+    Shroud,
 }
