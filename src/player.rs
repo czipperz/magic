@@ -41,6 +41,16 @@ impl Player {
         Ok(())
     }
 
+    pub fn take_damage(&mut self, _source: &Source, damage: usize) -> Result<(), ()> {
+        match self.health.checked_sub(damage) {
+            Some(health) => {
+                self.health = health;
+                Ok(())
+            }
+            None => Err(()),
+        }
+    }
+
     pub fn is_any_permanent_targetable_by(
         &self,
         state: &State,
