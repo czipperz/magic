@@ -32,6 +32,7 @@ use std::sync::Arc;
 #[derive(Clone, Default)]
 pub struct Triggers {
     pub cast: Option<Arc<Trigger>>,
+    pub permanent_enters_the_battlefield: Option<Arc<Trigger>>,
 }
 
 impl Triggers {
@@ -39,8 +40,18 @@ impl Triggers {
         Self::default()
     }
 
-    pub fn with_cast_triggers(mut self, cast_triggers: impl Trigger + 'static) -> Self {
-        self.cast = Some(Arc::new(cast_triggers));
+    pub fn set(&mut self, trigger_type: TriggerType, trigger: impl Trigger + 'static) {
+        let trigger: Option<Arc<Trigger>> = Some(Arc::new(trigger));
+        match trigger_type {
+            TriggerType::Cast => self.cast = trigger,
+            TriggerType::PermanentEntersTheBattlefield => {
+                self.permanent_enters_the_battlefield = trigger
+            }
+        }
+    }
+
+    pub fn on(mut self, trigger_type: TriggerType, trigger: impl Trigger + 'static) -> Self {
+        self.set(trigger_type, trigger);
         self
     }
 }
@@ -49,4 +60,9 @@ impl fmt::Debug for Triggers {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt, "Triggers {{ .. }}")
     }
+}
+
+pub enum TriggerType {
+    Cast,
+    PermanentEntersTheBattlefield,
 }

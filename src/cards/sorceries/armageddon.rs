@@ -12,12 +12,13 @@ pub fn armageddon(owner: PlayerNumber) -> Arc<Mutex<Card>> {
             ManaCost::new().with_blue(1),
             vec![Type::Instant],
         )
-        .with_base_triggers(Triggers::new().with_cast_triggers(TriggerOnExecute::new(
-            |state, _| {
+        .with_base_triggers(Triggers::new().on(
+            TriggerType::Cast,
+            TriggerOnExecute::new(|state, _| {
                 state
                     .destroy_all_permanents(&|state, card| card.types(state).contains(&Type::Land));
                 true
-            },
-        ))),
+            }),
+        )),
     ))
 }

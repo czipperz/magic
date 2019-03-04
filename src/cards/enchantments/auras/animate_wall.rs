@@ -15,8 +15,9 @@ pub fn animate_wall(owner: PlayerNumber) -> Arc<Mutex<Card>> {
             vec![Type::Enchantment],
         )
         .with_base_subtypes(vec![Subtype::Aura])
-        .with_base_triggers(
-            Triggers::new().with_cast_triggers(TriggerTargettingCreature::new(
+        .with_base_triggers(Triggers::new().on(
+            TriggerType::Cast,
+            TriggerTargettingCreature::new(
                 is_wall_on_battlefield,
                 add_aura(|_, _, card_state| {
                     if let Some(pos) = card_state
@@ -27,8 +28,8 @@ pub fn animate_wall(owner: PlayerNumber) -> Arc<Mutex<Card>> {
                         card_state.attributes.remove(pos);
                     }
                 }),
-            )),
-        ),
+            ),
+        )),
     ))
 }
 

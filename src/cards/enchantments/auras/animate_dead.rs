@@ -14,20 +14,18 @@ pub fn animate_dead(owner: PlayerNumber) -> Arc<Mutex<Card>> {
             vec![Type::Enchantment],
         )
         .with_base_subtypes(vec![Subtype::Aura])
-        .with_base_triggers(
-            Triggers::new().with_cast_triggers(TriggerTargettingCreature::new(
-                is_creature_in_graveyard,
-                |state, card, target_card| {
-                    let mut target_card = target_card.lock().unwrap();
-                    let player = card.lock().unwrap().controller(state);
-                    target_card.move_to(player, Zone::Battlefield);
-                    target_card.add_aura(card, |_, _, card_state| {
-                        card_state.power = card_state.power.saturating_sub(1);
-                    });
-                    true
-                },
-            )),
-        ),
+        .with_base_triggers(Triggers::new().on(
+            TriggerType::Cast,
+            TriggerTargettingCreature::new(is_creature_in_graveyard, |state, card, target_card| {
+                let mut target_card = target_card.lock().unwrap();
+                let player = card.lock().unwrap().controller(state);
+                target_card.move_to(player, Zone::Battlefield);
+                target_card.add_aura(card, |_, _, card_state| {
+                    card_state.power = card_state.power.saturating_sub(1);
+                });
+                true
+            }),
+        )),
     ))
 }
 

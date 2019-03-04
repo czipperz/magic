@@ -12,14 +12,14 @@ pub fn ancestral_recall(owner: PlayerNumber) -> Arc<Mutex<Card>> {
             ManaCost::new().with_blue(1),
             vec![Type::Instant],
         )
-        .with_base_triggers(Triggers::new().with_cast_triggers(
+        .with_base_triggers(Triggers::new().on(
+            TriggerType::Cast,
             TriggerTargettingPlayer::new(|state, target_player| {
                 state
                     .player(target_player)
                     .lock()
                     .unwrap()
-                    .draw_cards(state, 3)
-                    .unwrap();
+                    .draw_cards(state, 3);
                 true
             }),
         )),

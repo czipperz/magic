@@ -15,8 +15,9 @@ pub fn animate_artifact(owner: PlayerNumber) -> Arc<Mutex<Card>> {
             vec![Type::Enchantment],
         )
         .with_base_subtypes(vec![Subtype::Aura])
-        .with_base_triggers(
-            Triggers::new().with_cast_triggers(TriggerTargettingCreature::new(
+        .with_base_triggers(Triggers::new().on(
+            TriggerType::Cast,
+            TriggerTargettingCreature::new(
                 is_artifact_on_battlefield,
                 add_aura(|_, _, card_state| {
                     if !card_state.types.contains(&Type::Creature) {
@@ -25,8 +26,8 @@ pub fn animate_artifact(owner: PlayerNumber) -> Arc<Mutex<Card>> {
                         card_state.toughness = card_state.mana_cost.converted();
                     }
                 }),
-            )),
-        ),
+            ),
+        )),
     ))
 }
 

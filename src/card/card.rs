@@ -172,4 +172,8 @@ impl Card {
         self.base_state.triggers = triggers;
         self
     }
+
+    pub fn base_triggers_mut(&mut self) -> &mut Triggers {
+        &mut self.base_state.triggers
+    }
 }

@@ -1,3 +1,6 @@
+mod artifacts;
+pub use self::artifacts::*;
+
 mod creatures;
 pub use self::creatures::*;
 
