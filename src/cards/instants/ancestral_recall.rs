@@ -12,7 +12,7 @@ pub fn ancestral_recall(owner: PlayerNumber) -> Card {
     )
     .with_base_triggers(
         Triggers::new().with_cast_triggers(TriggerTargettingPlayer::new(|state, target_player| {
-            state.make_player_draw_cards(target_player, 3);
+            state.player(target_player).lock().unwrap().draw_cards(state, 3).unwrap();
             true
         })),
     )

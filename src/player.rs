@@ -24,7 +24,14 @@ impl Player {
         }
     }
 
-    pub fn draw_cards(&mut self, num: usize) -> Result<(), ()> {
+    pub fn is_valid_target(&self, _state: &State, _source: &Source) -> bool {
+        // TODO: implement hexproof and shroud for players
+        true
+    }
+
+    pub fn draw_cards(&mut self, _state: &State, num: usize) -> Result<(), ()> {
+        // TODO: implement draw card triggers
+        // TODO: implement losing when out of cards (Err returned)
         for _ in 0..num {
             self.hand.push(self.deck.pop().ok_or(())?);
         }
