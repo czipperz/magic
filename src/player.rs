@@ -51,6 +51,13 @@ impl Player {
         }
     }
 
+    pub fn count_permanents_on_battlefield(&self, predicate: &impl Fn(&Card) -> bool) -> usize {
+        self.battlefield
+            .iter()
+            .filter(|card| predicate(&*card.lock().unwrap()))
+            .count()
+    }
+
     pub fn is_any_permanent_targetable_by(
         &self,
         state: &State,
@@ -88,5 +95,12 @@ impl Player {
                 self.battlefield.push(permanent);
             }
         }
+    }
+}
+
+#[cfg(test)]
+impl Player {
+    pub fn inject_into_battlefield(&mut self, card: Arc<Mutex<Card>>) {
+        self.battlefield.push(card);
     }
 }
