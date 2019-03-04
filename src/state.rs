@@ -51,4 +51,10 @@ impl State {
     ) -> Option<Arc<Mutex<Card>>> {
         self.ui.lock().unwrap().select_card(self, source, predicate)
     }
+
+    pub fn destroy_all_permanents(&mut self, predicate: &impl Fn(&State, &Card) -> bool) {
+        for player in &self.players {
+            player.lock().unwrap().destroy_all_permanents(self, predicate)
+        }
+    }
 }

@@ -54,4 +54,26 @@ impl Player {
                     .is_valid_target(state, source, predicate)
             })
     }
+
+    pub fn destroy_all_permanents(
+        &mut self,
+        state: &State,
+        predicate: &impl Fn(&State, &Card) -> bool,
+    ) {
+        // TODO: replace with Vec::drain_filter when it becomes standardized
+        // for permanent in self.battlefield.drain_filter(predicate) {
+        //     permanent.destroy()p;
+        // }
+        let old_battlefield = {
+            let blank_battlefield = Vec::with_capacity(self.battlefield.len());
+            std::mem::replace(&mut self.battlefield, blank_battlefield)
+        };
+        for permanent in old_battlefield {
+            if predicate(state, &permanent.lock().unwrap()) {
+                self.graveyard.push(permanent);
+            } else {
+                self.battlefield.push(permanent);
+            }
+        }
+    }
 }
