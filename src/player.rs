@@ -6,6 +6,8 @@ use std::sync::{Arc, Mutex};
 pub type PlayerNumber = usize;
 
 pub struct Player {
+    health: usize,
+
     deck: Vec<Arc<Mutex<Card>>>,
     hand: Vec<Arc<Mutex<Card>>>,
     battlefield: Vec<Arc<Mutex<Card>>>,
@@ -14,8 +16,9 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(deck: Vec<Arc<Mutex<Card>>>) -> Self {
+    pub fn new(health: usize, deck: Vec<Arc<Mutex<Card>>>) -> Self {
         Player {
+            health,
             deck,
             hand: Vec::new(),
             battlefield: Vec::new(),

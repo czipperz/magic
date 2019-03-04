@@ -23,7 +23,7 @@ mod tests {
 
     #[test]
     fn test() {
-        let state = State::new(vec![], TestingUI::new());
+        let state = State::new(20, vec![], TestingUI::new());
         let air_elemental = air_elemental(1);
         assert_eq!(air_elemental.name(), "Air Elemental");
         assert_eq!(air_elemental.owner(), 1);

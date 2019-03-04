@@ -11,9 +11,9 @@ pub struct State {
 }
 
 impl State {
-    pub fn new(decks: Vec<Vec<Arc<Mutex<Card>>>>, ui: impl UserInterface + 'static) -> Self {
+    pub fn new(default_health: usize, decks: Vec<Vec<Arc<Mutex<Card>>>>, ui: impl UserInterface + 'static) -> Self {
         State {
-            players: decks.into_iter().map(|p| Arc::new(Mutex::new(Player::new(p)))).collect(),
+            players: decks.into_iter().map(|p| Arc::new(Mutex::new(Player::new(default_health, p)))).collect(),
             stack: Vec::new(),
             ui: Arc::new(Mutex::new(ui)),
         }
