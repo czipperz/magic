@@ -11,9 +11,16 @@ pub struct State {
 }
 
 impl State {
-    pub fn new(default_health: usize, decks: Vec<Vec<Arc<Mutex<Card>>>>, ui: impl UserInterface + 'static) -> Self {
+    pub fn new(
+        default_health: usize,
+        decks: Vec<Vec<Arc<Mutex<Card>>>>,
+        ui: impl UserInterface + 'static,
+    ) -> Self {
         State {
-            players: decks.into_iter().map(|p| Arc::new(Mutex::new(Player::new(default_health, p)))).collect(),
+            players: decks
+                .into_iter()
+                .map(|p| Arc::new(Mutex::new(Player::new(default_health, p))))
+                .collect(),
             stack: Vec::new(),
             ui: Arc::new(Mutex::new(ui)),
         }
@@ -24,7 +31,9 @@ impl State {
     }
 
     pub fn is_any_player_targetable_by(&self, source: &Source) -> bool {
-        self.players.iter().any(|player| player.lock().unwrap().is_valid_target(self, source))
+        self.players
+            .iter()
+            .any(|player| player.lock().unwrap().is_valid_target(self, source))
     }
 
     pub fn select_target_player(&mut self, source: &Source) -> Option<PlayerNumber> {
@@ -37,7 +46,11 @@ impl State {
         predicate: &impl Fn(&State, &Card) -> bool,
     ) -> bool {
         for player in &self.players {
-            if player.lock().unwrap().is_any_permanent_targetable_by(self, source, predicate) {
+            if player
+                .lock()
+                .unwrap()
+                .is_any_permanent_targetable_by(self, source, predicate)
+            {
                 return true;
             }
         }
@@ -54,7 +67,10 @@ impl State {
 
     pub fn destroy_all_permanents(&mut self, predicate: &impl Fn(&State, &Card) -> bool) {
         for player in &self.players {
-            player.lock().unwrap().destroy_all_permanents(self, predicate)
+            player
+                .lock()
+                .unwrap()
+                .destroy_all_permanents(self, predicate)
         }
     }
 }

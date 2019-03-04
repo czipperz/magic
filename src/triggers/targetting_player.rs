@@ -34,7 +34,12 @@ impl<C: Fn(&mut State, PlayerNumber) -> bool> Trigger for TriggerTargettingPlaye
 
     fn on_execute(&self, state: &mut State, bundle: &mut Bundle, card: Arc<Mutex<Card>>) -> bool {
         let target_player = bundle.map["target_player"].unwrap_player();
-        if state.player(target_player).lock().unwrap().is_valid_target(state, &Source::from_card(state, card)) {
+        if state
+            .player(target_player)
+            .lock()
+            .unwrap()
+            .is_valid_target(state, &Source::from_card(state, card))
+        {
             (self.callback)(state, target_player)
         } else {
             false
