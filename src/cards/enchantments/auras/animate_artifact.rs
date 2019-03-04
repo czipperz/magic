@@ -1,3 +1,4 @@
+use super::add_aura::*;
 use crate::card::*;
 use crate::mana::ManaCost;
 use crate::player::PlayerNumber;
@@ -15,19 +16,13 @@ pub fn animate_artifact(owner: PlayerNumber) -> Card {
     .with_base_triggers(
         Triggers::new().with_cast_triggers(TriggerTargettingCreature::new(
             is_artifact_on_battlefield,
-            |_, card, target_card| {
-                target_card
-                    .lock()
-                    .unwrap()
-                    .add_aura(card, |_, _, card_state| {
-                        if !card_state.types.contains(&Type::Creature) {
-                            card_state.types.push(Type::Creature);
-                            card_state.power = card_state.mana_cost.converted();
-                            card_state.toughness = card_state.mana_cost.converted();
-                        }
-                    });
-                true
-            },
+            add_aura(|_, _, card_state| {
+                if !card_state.types.contains(&Type::Creature) {
+                    card_state.types.push(Type::Creature);
+                    card_state.power = card_state.mana_cost.converted();
+                    card_state.toughness = card_state.mana_cost.converted();
+                }
+            }),
         )),
     )
 }

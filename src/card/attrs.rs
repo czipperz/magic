@@ -11,10 +11,12 @@ pub enum Type {
 pub enum Subtype {
     Aura,
     Elemental,
+    Wall,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Attribute {
+    Defender,
     Flying,
     Hexproof,
     Shroud,
