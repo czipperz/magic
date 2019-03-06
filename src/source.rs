@@ -1,20 +1,19 @@
-use crate::card::Card;
+use crate::card::Instance;
 use crate::mana::Color;
 use crate::player::PlayerNumber;
-use crate::state::State;
 use std::sync::{Arc, Mutex};
 
 pub struct Source {
+    pub card: Arc<Mutex<Instance>>,
     pub player: PlayerNumber,
     pub colors: Vec<Color>,
-    pub card: Arc<Mutex<Card>>,
 }
 
-impl Source {
-    pub fn from_card(state: &State, card: Arc<Mutex<Card>>) -> Source {
+impl From<Arc<Mutex<Instance>>> for Source {
+    fn from(card: Arc<Mutex<Instance>>) -> Self {
         let (player, colors) = {
             let card = card.lock().unwrap();
-            (card.controller(state), card.colors(state))
+            (card.controller(), card.card().colors().clone())
         };
         Source {
             player,

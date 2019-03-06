@@ -1,44 +1,46 @@
-use super::aura::Aura;
-use super::*;
-use crate::mana::*;
+use super::{Attribute, Subtype, Type};
+use crate::action::Cost;
+use crate::mana::{Color, ManaCost};
 use crate::player::PlayerNumber;
-use crate::source::Source;
-use crate::state::State;
-use crate::triggers::Triggers;
-use std::sync::{Arc, Mutex};
+use crate::trigger::Trigger;
+use std::sync::Arc;
 
+/// A `Card` represents the information written on a physical card.
+///
+/// To information about where the `Card` is located, see `Instance`.
 #[derive(Debug)]
 pub struct Card {
     name: String,
     owner: PlayerNumber,
-    auras: Vec<Aura>,
-    base_state: CardState,
+
+    mana_cost: ManaCost,
+    additional_costs: Vec<Cost>,
+    colors: Vec<Color>,
+    types: Vec<Type>,
+    subtypes: Vec<Subtype>,
+    attributes: Vec<Attribute>,
+    triggers: Vec<Arc<Trigger>>,
+    power: Option<isize>,
+    toughness: Option<isize>,
 }
 
 // constructors
 impl Card {
-    pub fn new(
-        name: String,
-        owner: PlayerNumber,
-        base_mana_cost: ManaCost,
-        base_types: Vec<Type>,
-    ) -> Self {
-        assert!(!base_types.is_empty());
+    pub fn new(name: String, owner: PlayerNumber, mana_cost: ManaCost, types: Vec<Type>) -> Self {
+        assert!(!types.is_empty());
+        let colors = mana_cost.colors();
         Card {
             name,
             owner,
-            base_state: CardState {
-                controller: owner,
-                zone: Zone::Deck,
-                mana_cost: base_mana_cost,
-                types: base_types,
-                subtypes: Vec::new(),
-                attributes: Vec::new(),
-                power: 0,
-                toughness: 0,
-                triggers: Triggers::new(),
-            },
-            auras: Vec::new(),
+            mana_cost,
+            additional_costs: Vec::new(),
+            colors,
+            types,
+            subtypes: Vec::new(),
+            attributes: Vec::new(),
+            triggers: Vec::new(),
+            power: None,
+            toughness: None,
         }
     }
 }
@@ -48,132 +50,82 @@ impl Card {
     pub fn name(&self) -> &str {
         &self.name
     }
+
     pub fn owner(&self) -> PlayerNumber {
         self.owner
     }
 
-    pub fn state(&self, state: &State) -> CardState {
-        let mut card_state = self.base_state.clone();
-        for aura in &self.auras {
-            aura.decorate_card_state(state, self, &mut card_state);
-        }
-        card_state
+    pub fn mana_cost(&self) -> ManaCost {
+        self.mana_cost.clone()
     }
 
-    pub fn controller(&self, state: &State) -> PlayerNumber {
-        self.state(state).controller
-    }
-    pub fn zone(&self, state: &State) -> Zone {
-        self.state(state).zone
-    }
-    pub fn mana_cost(&self, state: &State) -> ManaCost {
-        self.state(state).mana_cost
-    }
-    pub fn types(&self, state: &State) -> Vec<Type> {
-        self.state(state).types
-    }
-    pub fn subtypes(&self, state: &State) -> Vec<Subtype> {
-        self.state(state).subtypes
-    }
-    pub fn attributes(&self, state: &State) -> Vec<Attribute> {
-        self.state(state).attributes
-    }
-    pub fn power(&self, state: &State) -> usize {
-        self.state(state).power
-    }
-    pub fn toughness(&self, state: &State) -> usize {
-        self.state(state).toughness
-    }
-}
-
-// colors
-impl Card {
-    pub fn colors(&self, state: &State) -> Vec<Color> {
-        self.mana_cost(state).colors()
-    }
-}
-
-// predicates
-impl Card {
-    pub fn is_spell(&self, state: &State) -> bool {
-        !self.types(state).contains(&Type::Land)
+    pub fn additional_costs(&self) -> &Vec<Cost> {
+        &self.additional_costs
     }
 
-    pub fn cast_allows_responses(&self, state: &State) -> bool {
-        self.is_spell(state)
+    pub fn colors(&self) -> &Vec<Color> {
+        &self.colors
     }
 
-    pub fn is_valid_target(
-        &self,
-        state: &State,
-        source: &Source,
-        predicate: &impl Fn(&State, &Card) -> bool,
-    ) -> bool {
-        let card_state = self.state(state);
-        if card_state.attributes.contains(&Attribute::Shroud) {
-            false
-        } else if card_state.attributes.contains(&Attribute::Hexproof)
-            && source.player != card_state.controller
-        {
-            false
-        } else {
-            predicate(state, self)
-        }
-    }
-}
-
-// modifiers
-impl Card {
-    pub fn move_to(&mut self, controller: PlayerNumber, zone: Zone) {
-        if controller != self.owner() {
-            assert_eq!(zone, Zone::Battlefield);
-        }
-        self.base_state.controller = controller;
-        self.base_state.zone = zone;
+    pub fn types(&self) -> &Vec<Type> {
+        &self.types
     }
 
-    pub fn add_aura(
-        &mut self,
-        card: Arc<Mutex<Card>>,
-        decoration: impl Fn(&State, &Card, &mut CardState) + 'static,
-    ) {
-        assert!(card
-            .lock()
-            .unwrap()
-            .base_state
-            .subtypes
-            .contains(&Subtype::Aura));
-        self.auras.push(Aura {
-            card,
-            decoration: Box::new(decoration),
-        });
+    pub fn subtypes(&self) -> &Vec<Subtype> {
+        &self.subtypes
+    }
+
+    pub fn attributes(&self) -> &Vec<Attribute> {
+        &self.attributes
+    }
+
+    pub fn triggers(&self) -> &Vec<Arc<Trigger>> {
+        &self.triggers
+    }
+
+    pub fn power(&self) -> Option<isize> {
+        self.power.clone()
+    }
+
+    pub fn toughness(&self) -> Option<isize> {
+        self.toughness.clone()
     }
 }
 
 // builder
 impl Card {
-    pub fn with_base_subtypes(mut self, subtypes: Vec<Subtype>) -> Self {
-        self.base_state.subtypes = subtypes;
-        self
-    }
-    pub fn with_base_attributes(mut self, attributes: Vec<Attribute>) -> Self {
-        self.base_state.attributes = attributes;
-        self
-    }
-    pub fn with_base_power(mut self, power: usize) -> Self {
-        self.base_state.power = power;
-        self
-    }
-    pub fn with_base_toughness(mut self, toughness: usize) -> Self {
-        self.base_state.toughness = toughness;
-        self
-    }
-    pub fn with_base_triggers(mut self, triggers: Triggers) -> Self {
-        self.base_state.triggers = triggers;
+    pub fn with_additional_cost(mut self, additional_cost: Cost) -> Self {
+        self.additional_costs.push(additional_cost);
         self
     }
 
-    pub fn base_triggers_mut(&mut self) -> &mut Triggers {
-        &mut self.base_state.triggers
+    pub fn with_colors(mut self, colors: Vec<Color>) -> Self {
+        self.colors = colors;
+        self
+    }
+
+    pub fn with_subtype(mut self, subtype: Subtype) -> Self {
+        self.subtypes.push(subtype);
+        self
+    }
+
+    pub fn with_attribute(mut self, attribute: Attribute) -> Self {
+        self.attributes.push(attribute);
+        self
+    }
+
+    pub fn with_trigger(mut self, trigger: impl Trigger + 'static) -> Self {
+        self.triggers.push(Arc::new(trigger));
+        self
+    }
+
+    pub fn with_power(mut self, power: isize) -> Self {
+        self.power = Some(power);
+        self
+    }
+
+    pub fn with_toughness(mut self, toughness: isize) -> Self {
+        self.toughness = Some(toughness);
+        self
     }
 }

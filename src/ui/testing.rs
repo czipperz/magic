@@ -1,8 +1,9 @@
 use super::UserInterface;
-use crate::card::Card;
+use crate::card::Instance;
+use crate::game_state::GameState;
+use crate::permanent::Permanent;
 use crate::player::PlayerNumber;
 use crate::source::Source;
-use crate::state::State;
 use std::sync::{Arc, Mutex};
 
 pub struct TestingUI {}
@@ -14,16 +15,25 @@ impl TestingUI {
 }
 
 impl UserInterface for TestingUI {
-    fn select_player(&mut self, _state: &State, _source: &Source) -> Option<PlayerNumber> {
+    fn choose_player(&mut self, _game_state: &GameState, _source: &Source) -> Option<PlayerNumber> {
         unimplemented!()
     }
 
-    fn select_card(
+    fn choose_permanent(
         &mut self,
-        _state: &State,
+        _game_state: &GameState,
         _source: &Source,
-        _predicate: &Fn(&State, &Card) -> bool,
-    ) -> Option<Arc<Mutex<Card>>> {
+        _predicate: &Fn(&Arc<Mutex<Permanent>>) -> bool,
+    ) -> Option<Arc<Mutex<Permanent>>> {
+        unimplemented!()
+    }
+
+    fn choose_card(
+        &mut self,
+        _state: &GameState,
+        _source: &Source,
+        _predicate: &Fn(&Arc<Mutex<Instance>>) -> bool,
+    ) -> Option<Arc<Mutex<Instance>>> {
         unimplemented!()
     }
 }

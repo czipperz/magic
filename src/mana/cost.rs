@@ -1,42 +1,14 @@
-use crate::mana::Color;
+use crate::mana::ManaPool;
+use std::ops::{Deref, DerefMut};
 
 #[derive(Clone, Debug, Default)]
 pub struct ManaCost {
-    pub blue: usize,
-    pub white: usize,
-    pub green: usize,
-    pub red: usize,
-    pub black: usize,
-    pub generic: usize,
+    pub pool: ManaPool,
 }
 
 impl ManaCost {
     pub fn new() -> Self {
         Self::default()
-    }
-
-    pub fn converted(&self) -> usize {
-        self.blue + self.white + self.green + self.red + self.black
-    }
-
-    pub fn colors(&self) -> Vec<Color> {
-        let mut colors = Vec::new();
-        if self.blue != 0 {
-            colors.push(Color::Blue);
-        }
-        if self.white != 0 {
-            colors.push(Color::White);
-        }
-        if self.green != 0 {
-            colors.push(Color::Green);
-        }
-        if self.red != 0 {
-            colors.push(Color::Red);
-        }
-        if self.black != 0 {
-            colors.push(Color::Black);
-        }
-        colors
     }
 
     pub fn with_blue(mut self, blue: usize) -> Self {
@@ -62,5 +34,19 @@ impl ManaCost {
     pub fn with_generic(mut self, generic: usize) -> Self {
         self.generic = generic;
         self
+    }
+}
+
+impl Deref for ManaCost {
+    type Target = ManaPool;
+
+    fn deref(&self) -> &ManaPool {
+        &self.pool
+    }
+}
+
+impl DerefMut for ManaCost {
+    fn deref_mut(&mut self) -> &mut ManaPool {
+        &mut self.pool
     }
 }
