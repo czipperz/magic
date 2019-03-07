@@ -1,5 +1,5 @@
-use super::{Attribute, Subtype, Type};
-use crate::action::Cost;
+use super::cast_action::CastAction;
+use super::{Action, Attribute, Cost, Subtype, TargetDescription, Type};
 use crate::mana::{Color, ManaCost};
 use crate::player::PlayerNumber;
 use crate::trigger::Trigger;
@@ -13,13 +13,14 @@ pub struct Card {
     name: String,
     owner: PlayerNumber,
 
-    mana_cost: ManaCost,
-    additional_costs: Vec<Cost>,
+    cast_action: Action,
+    activated_abilities: Vec<Action>,
     colors: Vec<Color>,
     types: Vec<Type>,
     subtypes: Vec<Subtype>,
     attributes: Vec<Attribute>,
     triggers: Vec<Arc<Trigger>>,
+    color_words: Vec<Color>,
     power: Option<isize>,
     toughness: Option<isize>,
 }
@@ -32,13 +33,14 @@ impl Card {
         Card {
             name,
             owner,
-            mana_cost,
-            additional_costs: Vec::new(),
+            cast_action: Action::new(CastAction).with_mandatory_cost(Cost::Mana(mana_cost)),
+            activated_abilities: Vec::new(),
             colors,
             types,
             subtypes: Vec::new(),
             attributes: Vec::new(),
             triggers: Vec::new(),
+            color_words: Vec::new(),
             power: None,
             toughness: None,
         }
@@ -55,12 +57,19 @@ impl Card {
         self.owner
     }
 
-    pub fn mana_cost(&self) -> ManaCost {
-        self.mana_cost.clone()
+    pub fn cast_action(&self) -> &Action {
+        &self.cast_action
     }
 
-    pub fn additional_costs(&self) -> &Vec<Cost> {
-        &self.additional_costs
+    pub fn base_mana_cost(&self) -> &ManaCost {
+        match &self.cast_action.mandatory_costs[0] {
+            Cost::Mana(mc) => mc,
+            _ => panic!("Cast Action must have the first cost be the mana cost"),
+        }
+    }
+
+    pub fn activated_abilities(&self) -> &Vec<Action> {
+        &self.activated_abilities
     }
 
     pub fn colors(&self) -> &Vec<Color> {
@@ -83,6 +92,10 @@ impl Card {
         &self.triggers
     }
 
+    pub fn color_words(&self) -> &Vec<Color> {
+        &self.color_words
+    }
+
     pub fn power(&self) -> Option<isize> {
         self.power.clone()
     }
@@ -94,8 +107,20 @@ impl Card {
 
 // builder
 impl Card {
-    pub fn with_additional_cost(mut self, additional_cost: Cost) -> Self {
-        self.additional_costs.push(additional_cost);
+    pub fn with_mandatory_cost(mut self, additional_cost: Cost) -> Self {
+        self.cast_action.mandatory_costs.push(additional_cost);
+        self
+    }
+
+    pub fn with_optional_cost(mut self, additional_cost: Cost) -> Self {
+        self.cast_action.optional_costs.push(additional_cost);
+        self
+    }
+
+    pub fn with_target(mut self, target_description: TargetDescription) -> Self {
+        self.cast_action
+            .target_descriptions
+            .push(target_description);
         self
     }
 
@@ -116,6 +141,16 @@ impl Card {
 
     pub fn with_trigger(mut self, trigger: impl Trigger + 'static) -> Self {
         self.triggers.push(Arc::new(trigger));
+        self
+    }
+
+    pub fn with_activated_ability(mut self, ability: Action) -> Self {
+        self.activated_abilities.push(ability);
+        self
+    }
+
+    pub fn with_color_words(mut self, color_words: Vec<Color>) -> Self {
+        self.color_words = color_words;
         self
     }
 

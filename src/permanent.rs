@@ -22,7 +22,6 @@ impl From<Arc<Mutex<Instance>>> for Permanent {
     fn from(card: Arc<Mutex<Instance>>) -> Self {
         let (colors, types, subtypes, attributes, triggers, power, toughness) = {
             let card_locked = card.lock().unwrap();
-            let card_locked = card_locked.card();
             (
                 card_locked.colors().clone(),
                 card_locked.types().clone(),

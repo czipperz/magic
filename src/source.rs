@@ -13,12 +13,12 @@ impl From<Arc<Mutex<Instance>>> for Source {
     fn from(card: Arc<Mutex<Instance>>) -> Self {
         let (player, colors) = {
             let card = card.lock().unwrap();
-            (card.controller(), card.card().colors().clone())
+            (card.controller(), card.colors().clone())
         };
         Source {
+            card,
             player,
             colors,
-            card,
         }
     }
 }

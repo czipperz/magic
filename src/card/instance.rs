@@ -1,6 +1,7 @@
 use crate::card::{Card, Zone};
-use crate::player::PlayerNumber;
 use crate::permanent::Permanent;
+use crate::player::PlayerNumber;
+use std::ops::Deref;
 use std::sync::{Mutex, Weak};
 
 /// An instance of a particular `Card`.  This encapsulates the
@@ -34,5 +35,13 @@ impl Instance {
     }
     pub fn zone(&self) -> Zone {
         self.zone
+    }
+}
+
+impl Deref for Instance {
+    type Target = Card;
+
+    fn deref(&self) -> &Card {
+        &self.card
     }
 }
