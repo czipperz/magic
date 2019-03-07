@@ -1,5 +1,4 @@
-use super::cast_action::CastAction;
-use super::{Action, Attribute, Cost, Subtype, TargetDescription, Type};
+use super::{Action, Attribute, Cost, ResolveAction, Subtype, TargetDescription, Type};
 use crate::mana::{Color, ManaCost};
 use crate::player::PlayerNumber;
 use crate::trigger::Trigger;
@@ -27,13 +26,19 @@ pub struct Card {
 
 // constructors
 impl Card {
-    pub fn new(name: String, owner: PlayerNumber, mana_cost: ManaCost, types: Vec<Type>) -> Self {
+    pub fn new(
+        name: String,
+        owner: PlayerNumber,
+        mana_cost: ManaCost,
+        types: Vec<Type>,
+        on_resolve: impl ResolveAction + 'static,
+    ) -> Self {
         assert!(!types.is_empty());
         let colors = mana_cost.colors();
         Card {
             name,
             owner,
-            cast_action: Action::new(CastAction).with_mandatory_cost(Cost::Mana(mana_cost)),
+            cast_action: Action::new(on_resolve).with_mandatory_cost(Cost::Mana(mana_cost)),
             activated_abilities: Vec::new(),
             colors,
             types,
@@ -61,7 +66,7 @@ impl Card {
         &self.cast_action
     }
 
-    pub fn base_mana_cost(&self) -> &ManaCost {
+    pub fn mana_cost(&self) -> &ManaCost {
         match &self.cast_action.mandatory_costs[0] {
             Cost::Mana(mc) => mc,
             _ => panic!("Cast Action must have the first cost be the mana cost"),

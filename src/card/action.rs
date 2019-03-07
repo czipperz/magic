@@ -4,7 +4,7 @@ use crate::game_state::GameState;
 use crate::mana::{ManaCost, ManaPool};
 use crate::permanent::Permanent;
 use crate::player::PlayerNumber;
-use crate::spell::{Spell, Target};
+use crate::spell::{Spell, StackItem};
 use crate::ui::UserInterface;
 use std::fmt;
 use std::sync::{Arc, Mutex};
@@ -29,30 +29,27 @@ use std::sync::{Arc, Mutex};
 ///
 /// An example of an activated ability that uses an `Action` is Cycle.
 /// Another is Equip.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Action {
-    pub execute: Arc<ActionEvent>,
+    pub resolve: Arc<ResolveAction>,
     pub mandatory_costs: Vec<Cost>,
     pub optional_costs: Vec<Cost>,
     pub target_descriptions: Vec<TargetDescription>,
 }
 
-pub trait ActionEvent: fmt::Debug {
-    fn execute(
+pub trait ResolveAction: fmt::Debug {
+    fn resolve(
         &self,
         state: &mut GameState,
         ui: &mut UserInterface,
-        card: Arc<Mutex<Instance>>,
-        mandatory_payments: Vec<Payment>,
-        optional_payments: Vec<Option<Payment>>,
-        targets: Vec<Target>,
+        stack_item: StackItem,
     ) -> Event;
 }
 
 impl Action {
-    pub fn new(execute: impl ActionEvent + 'static) -> Self {
+    pub fn new(resolve: impl ResolveAction + 'static) -> Self {
         Action {
-            execute: Arc::new(execute),
+            resolve: Arc::new(resolve),
             mandatory_costs: Vec::new(),
             optional_costs: Vec::new(),
             target_descriptions: Vec::new(),
@@ -84,9 +81,10 @@ pub enum Payment {
 }
 
 /// The cost needed to perform an `Action`.
+#[derive(Clone)]
 pub enum Cost {
     Mana(ManaCost),
-    Sacrifice(Count, Box<Fn(&GameState, &Permanent) -> bool>),
+    Sacrifice(Count, Arc<Fn(&GameState, &Permanent) -> bool>),
     Costs(Vec<Cost>),
 }
 
@@ -100,11 +98,12 @@ impl fmt::Debug for Cost {
     }
 }
 
+#[derive(Clone)]
 pub enum TargetDescription {
-    Player(Count, Box<Fn(&GameState, PlayerNumber) -> bool>),
-    Permanent(Count, Box<Fn(&GameState, &Permanent) -> bool>),
-    Card(Count, Box<Fn(&GameState, &Instance) -> bool>),
-    Spell(Count, Box<Fn(&GameState, &Spell) -> bool>),
+    Player(Count, Arc<Fn(&GameState, PlayerNumber) -> bool>),
+    Permanent(Count, Arc<Fn(&GameState, &Permanent) -> bool>),
+    Card(Count, Arc<Fn(&GameState, &Instance) -> bool>),
+    Spell(Count, Arc<Fn(&GameState, &Spell) -> bool>),
 }
 
 impl fmt::Debug for TargetDescription {
@@ -121,7 +120,7 @@ impl fmt::Debug for TargetDescription {
 }
 
 /// The number of things to select.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Count {
     pub minimum: usize,
     pub maximum: Option<usize>,

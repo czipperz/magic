@@ -1,5 +1,6 @@
-use crate::card::{Attribute, Instance, Subtype, Type};
+use crate::card::{Action, Attribute, Instance, Subtype, Type};
 use crate::mana::Color;
+use crate::spell::Spell;
 use crate::trigger::Trigger;
 use std::sync::{Arc, Mutex, Weak};
 
@@ -9,23 +10,25 @@ pub struct Permanent {
     effects: Vec<Arc<Mutex<Permanent>>>,
     effecting: Weak<Mutex<Permanent>>,
 
+    activated_abilities: Vec<Action>,
     colors: Vec<Color>,
     types: Vec<Type>,
     subtypes: Vec<Subtype>,
     attributes: Vec<Attribute>,
     triggers: Vec<Arc<Trigger>>,
+    color_words: Vec<Color>,
     power: Option<isize>,
     toughness: Option<isize>,
 }
 
-impl From<Arc<Mutex<Instance>>> for Permanent {
-    fn from(card: Arc<Mutex<Instance>>) -> Self {
-        let (colors, types, subtypes, attributes, triggers, power, toughness) = {
-            let card_locked = card.lock().unwrap();
+impl From<Spell> for Permanent {
+    fn from(spell: Spell) -> Self {
+        let (activated_abilities, colors, types, attributes, triggers, power, toughness) = {
+            let card_locked = spell.card.lock().unwrap();
             (
+                card_locked.activated_abilities().clone(),
                 card_locked.colors().clone(),
                 card_locked.types().clone(),
-                card_locked.subtypes().clone(),
                 card_locked.attributes().clone(),
                 card_locked.triggers().clone(),
                 card_locked.power(),
@@ -33,15 +36,17 @@ impl From<Arc<Mutex<Instance>>> for Permanent {
             )
         };
         Permanent {
-            card,
+            card: spell.card,
             effects: Vec::new(),
             effecting: Weak::new(),
 
+            activated_abilities,
             colors,
             types,
-            subtypes,
+            subtypes: spell.subtypes,
             attributes,
             triggers,
+            color_words: spell.color_words,
             power,
             toughness,
         }

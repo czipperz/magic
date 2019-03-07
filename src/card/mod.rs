@@ -7,7 +7,8 @@ pub use self::attrs::*;
 mod card;
 pub use self::card::*;
 
-mod cast_action;
+mod default_cast_creature;
+pub use self::default_cast_creature::*;
 
 mod instance;
 pub use self::instance::*;
