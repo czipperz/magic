@@ -1,5 +1,5 @@
-use super::{Instance, ResolveAction, Zone};
-use crate::event::Event;
+use super::{ResolveAction, Zone};
+use crate::event::{Event, SourcedEvent};
 use crate::game_state::GameState;
 use crate::spell::StackItem;
 use crate::ui::UserInterface;
@@ -17,10 +17,8 @@ impl ResolveAction for DefaultCastPermanent {
         _game_state: &mut GameState,
         _ui: &mut UserInterface,
         stack_item: StackItem,
-    ) -> Event {
-        Event {
-            source: stack_item.card.clone().into(),
-            v: Instance::move_to_zone(stack_item.card, Zone::Battlefield),
-        }
+    ) -> SourcedEvent {
+        Event::move_to_zone(stack_item.card.clone(), Zone::Battlefield)
+            .with_source(stack_item.card.into())
     }
 }

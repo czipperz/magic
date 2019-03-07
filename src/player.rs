@@ -75,21 +75,20 @@ impl Player {
         true
     }
 
-    pub(crate) fn resolve_draw_cards(&mut self, num: usize) -> Result<(), ()> {
-        // TODO: implement draw card triggers
-        // TODO: implement losing when out of cards (Err returned)
+    pub(crate) fn resolve_draw_cards(&mut self, num: usize) {
+        // TODO: implement losing when out of cards (aborts)
         for _ in 0..num {
-            self.hand.push(self.deck.pop().ok_or(())?);
+            self.hand.push(match self.deck.pop() {
+                Some(card) => card,
+                None => unimplemented!(),
+            });
         }
-        Ok(())
     }
 
-    pub(crate) fn resolve_take_damage(&mut self, damage: usize) -> Result<(), ()> {
+    pub(crate) fn take_damage(&mut self, damage: usize) {
         self.health -= damage as isize;
-        if self.health > 0 {
-            Ok(())
-        } else {
-            Err(())
+        if self.health <= 0 {
+            unimplemented!()
         }
     }
 }

@@ -1,5 +1,5 @@
 use super::Instance;
-use crate::event::Event;
+use crate::event::SourcedEvent;
 use crate::game_state::GameState;
 use crate::mana::{ManaCost, ManaPool};
 use crate::permanent::Permanent;
@@ -43,7 +43,7 @@ pub trait ResolveAction: fmt::Debug {
         state: &mut GameState,
         ui: &mut UserInterface,
         stack_item: StackItem,
-    ) -> Event;
+    ) -> SourcedEvent;
 }
 
 impl Action {

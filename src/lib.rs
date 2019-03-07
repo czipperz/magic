@@ -1,5 +1,5 @@
 pub mod card;
-//pub mod cards;
+pub mod cards;
 pub mod controller;
 pub mod event;
 pub mod game_state;
