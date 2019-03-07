@@ -1,5 +1,6 @@
 use crate::card::Card;
 use crate::event::Event;
+use crate::locked_ref::LockedRef;
 use crate::player::Player;
 use std::sync::{Arc, Mutex};
 
@@ -26,7 +27,7 @@ impl GameState {
         }
     }
 
-    pub fn players(&self) -> &[Arc<Mutex<Player>>] {
-        &self.players
+    pub fn player<'a>(&'a self, player: usize) -> LockedRef<'a, Player> {
+        self.players[player].lock().unwrap().into()
     }
 }

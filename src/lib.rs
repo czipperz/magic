@@ -3,6 +3,7 @@ pub mod card;
 pub mod controller;
 pub mod event;
 pub mod game_state;
+pub mod locked_ref;
 pub mod mana;
 pub mod permanent;
 pub mod player;
