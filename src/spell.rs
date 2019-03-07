@@ -1,6 +1,5 @@
 use crate::card::Payment;
 use crate::card::{Instance, Subtype};
-use crate::event::{Event, EventV};
 use crate::mana::Color;
 use crate::permanent::Permanent;
 use crate::player::PlayerNumber;
@@ -22,7 +21,7 @@ pub enum Target {
 }
 
 impl Spell {
-    pub fn from_card(card: Arc<Mutex<Instance>>, payment: Payment, targets: Vec<Target>) -> Self {
+    pub fn new(card: Arc<Mutex<Instance>>, payment: Payment, targets: Vec<Target>) -> Self {
         let (color_words, subtypes) = {
             let card_locked = card.lock().unwrap();
             (
@@ -36,13 +35,6 @@ impl Spell {
             targets,
             color_words,
             subtypes,
-        }
-    }
-
-    pub fn cast(card: Arc<Mutex<Instance>>, payment: Payment, targets: Vec<Target>) -> Event {
-        Event {
-            source: card.clone().into(),
-            v: EventV::Cast(Spell::from_card(card, payment, targets)),
         }
     }
 }

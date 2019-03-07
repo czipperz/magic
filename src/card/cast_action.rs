@@ -1,7 +1,7 @@
 use super::{ActionEvent, Instance, Payment};
 use crate::event::Event;
 use crate::game_state::GameState;
-use crate::spell::{Spell, Target};
+use crate::spell::Target;
 use crate::ui::UserInterface;
 use std::sync::{Arc, Mutex};
 
@@ -19,7 +19,7 @@ impl ActionEvent for CastAction {
         optional_payments: Vec<Option<Payment>>,
         targets: Vec<Target>,
     ) -> Event {
-        Spell::cast(
+        Event::cast(
             card,
             Payment::Payments(
                 mandatory_payment
