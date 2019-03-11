@@ -1,4 +1,27 @@
 [[package]]
 name = "magic"
 version = "0.1.0"
+dependencies = [
+ "magic_cards 0.1.0",
+ "magic_controller 0.1.0",
+ "magic_core 0.1.0",
+]
+
+[[package]]
+name = "magic_cards"
+version = "0.1.0"
+dependencies = [
+ "magic_core 0.1.0",
+]
+
+[[package]]
+name = "magic_controller"
+version = "0.1.0"
+dependencies = [
+ "magic_core 0.1.0",
+]
+
+[[package]]
+name = "magic_core"
+version = "0.1.0"
 
