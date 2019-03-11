@@ -5,6 +5,7 @@ dependencies = [
  "magic_cards 0.1.0",
  "magic_controller 0.1.0",
  "magic_core 0.1.0",
+ "magic_graphics 0.1.0",
 ]
 
 [[package]]
@@ -24,4 +25,11 @@ dependencies = [
 [[package]]
 name = "magic_core"
 version = "0.1.0"
+
+[[package]]
+name = "magic_graphics"
+version = "0.1.0"
+dependencies = [
+ "magic_core 0.1.0",
+]
 

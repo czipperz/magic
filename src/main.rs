@@ -1,10 +1,7 @@
 use magic_cards::*;
 use magic_controller::Controller;
 use magic_core::state::State;
-use magic_core::ui::UserInterface;
-
-struct GraphicalUserInterface;
-impl UserInterface for GraphicalUserInterface {}
+use magic_graphics::GraphicalUserInterface;
 
 fn main() {
     let health = 20;
@@ -15,6 +12,6 @@ fn main() {
     ];
     let deck2 = vec![];
     let decks = vec![deck1, deck2];
-    let mut controller = Controller::new(GraphicalUserInterface, State::new(health, decks));
+    let mut controller = Controller::new(GraphicalUserInterface::new(), State::new(health, decks));
     controller.run();
 }
