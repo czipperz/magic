@@ -32,7 +32,7 @@ fn attach(action: ActivatedAction) -> Event {
 }
 
 struct CastAura;
-impl ResolveAction for CastAura {
+impl ActionResolver for CastAura {
     fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event> {
         vec![
             put_on_battlefield(state, action.source.clone()),
@@ -64,7 +64,7 @@ impl Trigger for EnterTheBattlefieldAttachIfNot {
 }
 
 struct AttachAura;
-impl ResolveAction for AttachAura {
+impl ActionResolver for AttachAura {
     fn resolve(&self, _state: &State, action: ActivatedAction) -> Vec<Event> {
         vec![attach(action)]
     }

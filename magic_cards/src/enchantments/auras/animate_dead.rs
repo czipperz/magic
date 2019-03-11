@@ -1,6 +1,6 @@
 use super::aura::aura;
 use magic_core::action::{
-    Action, ActivatedAction, ResolveAction, Target, TargetDescription, Trigger,
+    Action, ActionResolver, ActivatedAction, Target, TargetDescription, Trigger,
 };
 use magic_core::card::{Card, Subtype, Type};
 use magic_core::effect::Effect;
@@ -45,7 +45,7 @@ impl Trigger for AnimateDeadEnterTheBattlefieldTrigger {
 }
 
 struct AnimateDeadEnterTheBattlefieldAction;
-impl ResolveAction for AnimateDeadEnterTheBattlefieldAction {
+impl ActionResolver for AnimateDeadEnterTheBattlefieldAction {
     fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event> {
         let aura_instance = action.source.instance;
         let aura = aura_instance.get(state).permanent(state).unwrap();

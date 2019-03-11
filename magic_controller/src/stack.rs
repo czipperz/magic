@@ -1,11 +1,11 @@
-use magic_core::action::{ActivatedAction, ResolveAction};
+use magic_core::action::{ActionResolver, ActivatedAction};
 use magic_core::event::Event;
 use magic_core::state::State;
 use std::sync::Arc;
 
 #[derive(Default)]
 pub struct Stack {
-    actions: Vec<(Arc<ResolveAction>, ActivatedAction)>,
+    actions: Vec<(Arc<ActionResolver>, ActivatedAction)>,
 }
 
 impl Stack {
@@ -15,7 +15,7 @@ impl Stack {
             .map(|(resolve, action)| resolve.resolve(state, action))
     }
 
-    pub fn push(&mut self, resolve_action: Arc<ResolveAction>, action: ActivatedAction) {
+    pub fn push(&mut self, resolve_action: Arc<ActionResolver>, action: ActivatedAction) {
         self.actions.push((resolve_action, action));
     }
 }

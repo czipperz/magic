@@ -1,4 +1,4 @@
-use magic_core::action::{ActivatedAction, ResolveAction};
+use magic_core::action::{ActionResolver, ActivatedAction};
 use magic_core::event::*;
 use magic_core::source::Source;
 use magic_core::state::State;
@@ -10,7 +10,7 @@ pub fn put_on_battlefield(state: &State, source: Source) -> Event {
 }
 
 pub struct CastPermanent;
-impl ResolveAction for CastPermanent {
+impl ActionResolver for CastPermanent {
     fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event> {
         vec![put_on_battlefield(state, action.source)]
     }

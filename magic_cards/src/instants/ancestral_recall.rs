@@ -1,4 +1,4 @@
-use magic_core::action::{ActivatedAction, ResolveAction, Target, TargetDescription};
+use magic_core::action::{ActionResolver, ActivatedAction, Target, TargetDescription};
 use magic_core::card::Card;
 use magic_core::event::*;
 use magic_core::mana::ManaCost;
@@ -15,7 +15,7 @@ pub fn ancestral_recall() -> Card {
 
 struct CastAncestralRecall;
 
-impl ResolveAction for CastAncestralRecall {
+impl ActionResolver for CastAncestralRecall {
     fn resolve(&self, _: &State, action: ActivatedAction) -> Vec<Event> {
         if let Target::Player(players) = &action.targets[0] {
             assert_eq!(players.len(), 1);

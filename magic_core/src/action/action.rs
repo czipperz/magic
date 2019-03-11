@@ -26,13 +26,13 @@ use std::sync::Arc;
 /// Another is Equip.
 #[derive(Clone)]
 pub struct Action {
-    pub resolve: Arc<ResolveAction>,
+    pub resolve: Arc<ActionResolver>,
     pub target_descriptions: Vec<TargetDescription>,
     pub mandatory_costs: Vec<Cost>,
     pub optional_costs: Vec<Cost>,
 }
 
-pub trait ResolveAction {
+pub trait ActionResolver {
     fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event>;
 }
 
@@ -52,7 +52,7 @@ pub enum ActionType {
 
 impl<R> From<R> for Action
 where
-    R: ResolveAction + 'static,
+    R: ActionResolver + 'static,
 {
     fn from(resolve: R) -> Self {
         Action {

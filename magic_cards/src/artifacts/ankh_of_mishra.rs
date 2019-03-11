@@ -1,5 +1,5 @@
 use crate::cast::CastPermanent;
-use magic_core::action::{Action, ActivatedAction, ResolveAction, Trigger};
+use magic_core::action::{Action, ActionResolver, ActivatedAction, Trigger};
 use magic_core::card::{Card, Type};
 use magic_core::event::*;
 use magic_core::instance::InstanceNumber;
@@ -38,7 +38,7 @@ impl Trigger for AnkhOfMishraTrigger {
 struct AnkhOfMishraAction {
     controller: PlayerNumber,
 }
-impl ResolveAction for AnkhOfMishraAction {
+impl ActionResolver for AnkhOfMishraAction {
     fn resolve(&self, _: &State, action: ActivatedAction) -> Vec<Event> {
         vec![Event::State(
             action.source,
