@@ -10,4 +10,8 @@ impl GraphicalUserInterface {
     }
 }
 
-impl UserInterface for GraphicalUserInterface {}
+impl UserInterface for GraphicalUserInterface {
+    fn choose_target(&mut self, state: &State, target_description: TargetDescription) -> Target {
+        unimplemented!()
+    }
+}

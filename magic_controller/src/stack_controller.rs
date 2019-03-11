@@ -71,7 +71,7 @@ fn activate(
     // resolve targets
     let mut targets = Vec::new();
     for target_description in action.target_descriptions {
-        targets.push(choose_target(ui, state, target_description));
+        targets.push(ui.choose_target(state, target_description));
     }
 
     // resolve payments
@@ -92,10 +92,6 @@ fn activate(
         mandatory_payments,
         optional_payments,
     }
-}
-
-fn choose_target(ui: &mut UserInterface, state: &State, target_description: TargetDescription) -> Target {
-    unimplemented!()
 }
 
 fn pay(ui: &mut UserInterface, state: &mut State, mandatory_cost: Cost) -> Payment {
