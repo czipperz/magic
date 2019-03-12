@@ -20,4 +20,8 @@ impl UserInterface for GraphicalUserInterface {
     ) -> Target {
         unimplemented!()
     }
+
+    fn display(&mut self, _state: &State) {
+        unimplemented!()
+    }
 }

@@ -9,4 +9,6 @@ pub trait UserInterface {
         source: &Source,
         description: TargetDescription,
     ) -> Target;
+
+    fn display(&mut self, state: &State);
 }
