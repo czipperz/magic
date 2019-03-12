@@ -7,6 +7,7 @@ pub struct ManaPool {
     pub green: usize,
     pub red: usize,
     pub black: usize,
+    pub colorless: usize,
     pub generic: usize,
 }
 
@@ -16,7 +17,7 @@ impl ManaPool {
     }
 
     pub fn converted(&self) -> usize {
-        self.blue + self.white + self.green + self.red + self.black
+        self.blue + self.white + self.green + self.red + self.black + self.colorless + self.generic
     }
 
     pub fn colors(&self) -> Vec<Color> {
@@ -35,6 +36,9 @@ impl ManaPool {
         }
         if self.black != 0 {
             colors.push(Color::Black);
+        }
+        if self.colorless != 0 {
+            colors.push(Color::Colorless);
         }
         colors
     }

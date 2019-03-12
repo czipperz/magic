@@ -31,6 +31,10 @@ impl ManaCost {
         self.black = black;
         self
     }
+    pub fn with_colorless(mut self, colorless: usize) -> Self {
+        self.colorless = colorless;
+        self
+    }
     pub fn with_generic(mut self, generic: usize) -> Self {
         self.generic = generic;
         self
