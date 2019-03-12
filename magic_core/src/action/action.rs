@@ -45,6 +45,7 @@ pub struct ActivatedAction {
     pub optional_payments: Vec<Option<Payment>>,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ActionType {
     Spell,
     ActivatedAbility,
