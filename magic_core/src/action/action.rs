@@ -30,6 +30,7 @@ pub struct Action {
     pub target_descriptions: Vec<TargetDescription>,
     pub mandatory_costs: Vec<Cost>,
     pub optional_costs: Vec<Cost>,
+    pub is_mana_ability: bool,
 }
 
 pub trait ActionResolver {
@@ -60,6 +61,7 @@ where
             mandatory_costs: Vec::new(),
             optional_costs: Vec::new(),
             target_descriptions: Vec::new(),
+            is_mana_ability: false,
         }
     }
 }
@@ -77,6 +79,11 @@ impl Action {
 
     pub fn with_target(mut self, target: TargetDescription) -> Self {
         self.target_descriptions.push(target);
+        self
+    }
+
+    pub fn as_mana_ability(mut self) -> Self {
+        self.is_mana_ability = true;
         self
     }
 }
