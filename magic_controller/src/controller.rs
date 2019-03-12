@@ -1,13 +1,12 @@
 use crate::stack::Stack;
-use magic_core::action::{Action, ActionType};
-use magic_core::source::Source;
+use magic_core::action::SourcedAction;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
 
 pub struct Controller {
     pub(crate) ui: Box<UserInterface>,
     pub(crate) state: State,
-    pub(crate) actions: Vec<(ActionType, Source, Action)>,
+    pub(crate) actions: Vec<SourcedAction>,
     pub(crate) stack: Stack,
 }
 

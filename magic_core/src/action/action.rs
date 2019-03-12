@@ -33,6 +33,12 @@ pub struct Action {
     pub is_mana_ability: bool,
 }
 
+pub struct SourcedAction {
+    pub action_type: ActionType,
+    pub source: Source,
+    pub action: Action,
+}
+
 pub trait ActionResolver {
     fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event>;
 }

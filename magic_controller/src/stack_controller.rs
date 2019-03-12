@@ -34,8 +34,11 @@ impl Controller {
                             controller: player_number,
                             instance: *instance,
                         };
-                        self.actions
-                            .push((ActionType::TriggeredAbility, source, action))
+                        self.actions.push(SourcedAction {
+                            action_type: ActionType::TriggeredAbility,
+                            source,
+                            action,
+                        })
                     }
                 }
             }
@@ -45,10 +48,10 @@ impl Controller {
     fn build_stack(&mut self) {
         self.sort_actions();
         let actions = std::mem::replace(&mut self.actions, Vec::new());
-        for (action_type, source, action) in actions {
-            let resolve = action.resolve.clone();
+        for action in actions {
+            let resolve = action.action.resolve.clone();
             if let Some(activated) =
-                activate(&mut *self.ui, &mut self.state, action_type, source, action)
+                activate(&mut *self.ui, &mut self.state, action)
             {
                 self.stack.push(resolve, activated);
             }
@@ -68,14 +71,12 @@ impl Controller {
 fn activate(
     ui: &mut UserInterface,
     state: &mut State,
-    action_type: ActionType,
-    source: Source,
-    action: Action,
+    action: SourcedAction,
 ) -> Option<ActivatedAction> {
     // resolve targets
     let mut targets = Vec::new();
-    for target_description in action.target_descriptions {
-        if let Some(target) = ui.choose_target(state, &source, target_description) {
+    for target_description in action.action.target_descriptions {
+        if let Some(target) = ui.choose_target(state, &action.source, target_description) {
             targets.push(target);
         } else {
             return None;
@@ -84,8 +85,8 @@ fn activate(
 
     // resolve payments
     let mut mandatory_payments = Vec::new();
-    for mandatory_cost in action.mandatory_costs {
-        if let Some(payment) = select_payment(ui, state, &source, mandatory_cost) {
+    for mandatory_cost in action.action.mandatory_costs {
+        if let Some(payment) = select_payment(ui, state, &action.source, mandatory_cost) {
             mandatory_payments.push(payment)
         } else {
             return None;
@@ -93,13 +94,13 @@ fn activate(
     }
 
     let mut optional_payments = Vec::new();
-    for optional_cost in action.optional_costs {
-        optional_payments.push(select_payment(ui, state, &source, optional_cost));
+    for optional_cost in action.action.optional_costs {
+        optional_payments.push(select_payment(ui, state, &action.source, optional_cost));
     }
 
     Some(ActivatedAction {
-        action_type,
-        source,
+        action_type: action.action_type,
+        source: action.source,
         targets,
         mandatory_payments,
         optional_payments,
@@ -123,7 +124,7 @@ fn select_payment(
     }
 }
 
-fn select_mana(_ui: &mut UserInterface, state: &State, cost: ManaCost) -> Option<Payment> {
+fn select_mana(_ui: &mut UserInterface, _state: &State, cost: ManaCost) -> Option<Payment> {
     // must update to support new forms of mana
     let ManaCost { pool } = cost;
     Some(Payment::Mana(pool))
