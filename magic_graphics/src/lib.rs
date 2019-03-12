@@ -1,4 +1,4 @@
-use magic_core::action::{Target, TargetDescription};
+use magic_core::action::{Action, Target, TargetDescription};
 use magic_core::source::Source;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
@@ -18,6 +18,10 @@ impl UserInterface for GraphicalUserInterface {
         _source: &Source,
         _target_description: TargetDescription,
     ) -> Option<Target> {
+        unimplemented!()
+    }
+
+    fn maybe_trigger_mana_ability(&mut self, _state: &State) -> Option<Action> {
         unimplemented!()
     }
 

@@ -1,4 +1,4 @@
-use crate::action::{Target, TargetDescription};
+use crate::action::{Action, Target, TargetDescription};
 use crate::source::Source;
 use crate::state::State;
 
@@ -20,6 +20,13 @@ pub trait UserInterface {
         source: &Source,
         description: TargetDescription,
     ) -> Option<Target>;
+
+    /// Let the user possibly trigger mana abilities.
+    ///
+    /// This returns `Some(action)` if the user triggered a mana ability.
+    /// This returns `None` if the user selected to stop triggering mana
+    /// abilities.
+    fn maybe_trigger_mana_ability(&mut self, state: &State) -> Option<Action>;
 
     fn display(&mut self, state: &State);
 }
