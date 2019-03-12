@@ -9,13 +9,17 @@ pub struct Stack {
 }
 
 impl Stack {
-    fn pop(&mut self, state: &State) -> Option<Vec<Event>> {
-        self.actions
-            .pop()
-            .map(|(resolve, action)| resolve.resolve(state, action))
+    pub fn pop(&mut self, state: &State) -> Option<Vec<Event>> {
+        if let Some((resolver, action)) = self.actions.pop() {
+            let events = resolver.resolve(state, action);
+            // TODO: run replacement effects
+            Some(events)
+        } else {
+            None
+        }
     }
 
-    pub fn push(&mut self, resolve_action: Arc<ActionResolver>, action: ActivatedAction) {
-        self.actions.push((resolve_action, action));
+    pub fn push(&mut self, resolver: Arc<ActionResolver>, action: ActivatedAction) {
+        self.actions.push((resolver, action));
     }
 }
