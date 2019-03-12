@@ -17,7 +17,7 @@ impl UserInterface for GraphicalUserInterface {
         _state: &State,
         _source: &Source,
         _target_description: TargetDescription,
-    ) -> Target {
+    ) -> Option<Target> {
         unimplemented!()
     }
 

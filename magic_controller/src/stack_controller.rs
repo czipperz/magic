@@ -46,8 +46,11 @@ impl Controller {
         let actions = std::mem::replace(&mut self.actions, Vec::new());
         for (action_type, source, action) in actions {
             let resolve = action.resolve.clone();
-            let activated = activate(&mut *self.ui, &mut self.state, action_type, source, action);
-            self.stack.push(resolve, activated);
+            if let Some(activated) =
+                activate(&mut *self.ui, &mut self.state, action_type, source, action)
+            {
+                self.stack.push(resolve, activated);
+            }
         }
     }
 
@@ -67,37 +70,42 @@ fn activate(
     action_type: ActionType,
     source: Source,
     action: Action,
-) -> ActivatedAction {
+) -> Option<ActivatedAction> {
     // resolve targets
     let mut targets = Vec::new();
     for target_description in action.target_descriptions {
-        targets.push(ui.choose_target(state, &source, target_description));
+        if let Some(target) = ui.choose_target(state, &source, target_description) {
+            targets.push(target);
+        } else {
+            return None;
+        }
     }
 
     // resolve payments
     let mut mandatory_payments = Vec::new();
     for mandatory_cost in action.mandatory_costs {
-        mandatory_payments.push(pay(ui, state, mandatory_cost))
+        if let Some(payment) = pay(ui, state, mandatory_cost) {
+            mandatory_payments.push(payment)
+        } else {
+            return None;
+        }
     }
 
     let mut optional_payments = Vec::new();
     for optional_cost in action.optional_costs {
-        optional_payments.push(maybe_pay(ui, state, optional_cost))
+        optional_payments.push(pay(ui, state, optional_cost));
     }
 
-    ActivatedAction {
+    Some(ActivatedAction {
         action_type,
         source,
         targets,
         mandatory_payments,
         optional_payments,
-    }
+    })
 }
 
-fn pay(ui: &mut UserInterface, state: &mut State, mandatory_cost: Cost) -> Payment {
+fn pay(ui: &mut UserInterface, state: &mut State, mandatory_cost: Cost) -> Option<Payment> {
     unimplemented!()
 }
-
-fn maybe_pay(ui: &mut UserInterface, state: &mut State, mandatory_cost: Cost) -> Option<Payment> {
-    unimplemented!()
 }
