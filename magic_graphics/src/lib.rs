@@ -1,4 +1,5 @@
 use magic_core::action::{Target, TargetDescription};
+use magic_core::source::Source;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
 
@@ -11,7 +12,12 @@ impl GraphicalUserInterface {
 }
 
 impl UserInterface for GraphicalUserInterface {
-    fn choose_target(&mut self, state: &State, target_description: TargetDescription) -> Target {
+    fn choose_target(
+        &mut self,
+        _state: &State,
+        _source: &Source,
+        _target_description: TargetDescription,
+    ) -> Target {
         unimplemented!()
     }
 }

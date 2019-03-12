@@ -71,7 +71,7 @@ fn activate(
     // resolve targets
     let mut targets = Vec::new();
     for target_description in action.target_descriptions {
-        targets.push(ui.choose_target(state, target_description));
+        targets.push(ui.choose_target(state, &source, target_description));
     }
 
     // resolve payments
