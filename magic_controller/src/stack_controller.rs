@@ -1,6 +1,7 @@
 use crate::controller::Controller;
 use magic_core::action::*;
 use magic_core::event::{Event, TurnEvent};
+use magic_core::mana::ManaCost;
 use magic_core::source::Source;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
@@ -84,7 +85,7 @@ fn activate(
     // resolve payments
     let mut mandatory_payments = Vec::new();
     for mandatory_cost in action.mandatory_costs {
-        if let Some(payment) = pay(ui, state, mandatory_cost) {
+        if let Some(payment) = select_payment(ui, state, &source, mandatory_cost) {
             mandatory_payments.push(payment)
         } else {
             return None;
@@ -93,7 +94,7 @@ fn activate(
 
     let mut optional_payments = Vec::new();
     for optional_cost in action.optional_costs {
-        optional_payments.push(pay(ui, state, optional_cost));
+        optional_payments.push(select_payment(ui, state, &source, optional_cost));
     }
 
     Some(ActivatedAction {
@@ -105,7 +106,38 @@ fn activate(
     })
 }
 
-fn pay(ui: &mut UserInterface, state: &mut State, mandatory_cost: Cost) -> Option<Payment> {
-    unimplemented!()
+fn select_payment(
+    ui: &mut UserInterface,
+    state: &State,
+    source: &Source,
+    mandatory_cost: Cost,
+) -> Option<Payment> {
+    match mandatory_cost {
+        Cost::Mana(mana_cost) => select_mana(ui, state, mana_cost),
+        Cost::Sacrifice(number, predicate) => select_sacrifice(
+            ui,
+            state,
+            source,
+            TargetDescription::Permanent(number, predicate),
+        ),
+    }
 }
+
+fn select_mana(_ui: &mut UserInterface, state: &State, cost: ManaCost) -> Option<Payment> {
+    // must update to support new forms of mana
+    let ManaCost { pool } = cost;
+    Some(Payment::Mana(pool))
+}
+
+fn select_sacrifice(
+    ui: &mut UserInterface,
+    state: &State,
+    source: &Source,
+    target: TargetDescription,
+) -> Option<Payment> {
+    ui.choose_target(state, source, target)
+        .map(|target| match target {
+            Target::Permanent(permanents) => Payment::Sacrifice(permanents),
+            _ => unreachable!(),
+        })
 }
