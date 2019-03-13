@@ -1,4 +1,5 @@
 use crate::controller::Controller;
+use crate::stack::Stack;
 use magic_core::action::*;
 use magic_core::event::{Event, TurnEvent};
 use magic_core::mana::ManaCost;
@@ -51,7 +52,7 @@ impl Controller {
         for action in actions {
             let resolve = action.action.resolve.clone();
             if let Some(activated) =
-                activate(&mut *self.ui, &mut self.state, action)
+                activate(&mut *self.ui, &mut self.state, &mut self.stack, action)
             {
                 self.stack.push(resolve, activated);
             }
@@ -71,6 +72,7 @@ impl Controller {
 fn activate(
     ui: &mut UserInterface,
     state: &mut State,
+    stack: &mut Stack,
     action: SourcedAction,
 ) -> Option<ActivatedAction> {
     // resolve targets
@@ -81,6 +83,17 @@ fn activate(
         } else {
             return None;
         }
+    }
+
+    if action.action_type == ActionType::Spell
+        && (action.action.mandatory_costs.iter())
+            .chain(action.action.optional_costs.iter())
+            .any(|cost| match cost {
+                Cost::Mana(_) => true,
+                _ => false,
+            })
+    {
+        allow_mana_ability_responses(ui, state, stack);
     }
 
     // resolve payments
@@ -105,6 +118,23 @@ fn activate(
         mandatory_payments,
         optional_payments,
     })
+}
+
+fn allow_mana_ability_responses(
+    ui: &mut UserInterface,
+    state: &mut State,
+    stack: &mut Stack,
+) -> Vec<Event> {
+    let mut events = Vec::new();
+    while let Some(ability) = ui.maybe_trigger_mana_ability(state) {
+        let resolve = ability.action.resolve.clone();
+        if let Some(activated) = activate(ui, state, stack, ability) {
+            assert_eq!(activated.action_type, ActionType::ActivatedAbility);
+            stack.push(resolve, activated);
+            events.append(&mut stack.pop(state).unwrap());
+        }
+    }
+    events
 }
 
 fn select_payment(
