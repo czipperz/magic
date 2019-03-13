@@ -111,13 +111,22 @@ fn activate(
         optional_payments.push(select_payment(ui, state, &action.source, optional_cost));
     }
 
-    Some(ActivatedAction {
-        action_type: action.action_type,
-        source: action.source,
-        targets,
-        mandatory_payments,
-        optional_payments,
-    })
+    if pay_payments(
+        state,
+        mandatory_payments
+            .iter()
+            .chain(optional_payments.iter().filter_map(|x| x.as_ref())),
+    ) {
+        Some(ActivatedAction {
+            action_type: action.action_type,
+            source: action.source,
+            targets,
+            mandatory_payments,
+            optional_payments,
+        })
+    } else {
+        None
+    }
 }
 
 fn allow_mana_ability_responses(
@@ -171,4 +180,8 @@ fn select_sacrifice(
             Target::Permanent(permanents) => Payment::Sacrifice(permanents),
             _ => unreachable!(),
         })
+}
+
+fn pay_payments<'a, I: Iterator<Item = &'a Payment>>(_state: &mut State, _payments: I) -> bool {
+    unimplemented!()
 }
