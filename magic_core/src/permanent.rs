@@ -6,7 +6,7 @@ use crate::replacement_effect::ReplacementEffect;
 use crate::state::State;
 use std::sync::Arc;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct PermanentNumber {
     pub(crate) number: usize,
 }

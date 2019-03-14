@@ -4,7 +4,7 @@ use crate::player::{Player, PlayerNumber};
 use crate::state::State;
 use crate::zone::Zone;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct InstanceNumber {
     pub(crate) number: usize,
 }
