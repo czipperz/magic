@@ -113,15 +113,20 @@ fn allow_mana_ability_responses(ui: &mut UserInterface, state: &mut State) -> Ve
         let resolver = ability.action.resolve.clone();
         if let Some(activated) = activate(ui, state, ability) {
             assert_eq!(activated.action_type, ActionType::ActivatedAbility);
-            events.append(&mut resolve(state, &*resolver, activated));
+            events.append(&mut resolve(state, ui, &*resolver, activated));
         }
     }
     events
 }
 
-fn resolve(state: &State, resolver: &ActionResolver, activated: ActivatedAction) -> Vec<Event> {
+fn resolve(
+    state: &State,
+    ui: &mut UserInterface,
+    resolver: &ActionResolver,
+    activated: ActivatedAction,
+) -> Vec<Event> {
     let events = resolver.resolve(state, activated);
-    state.replacement_effects(events)
+    state.replacement_effects(ui, events)
 }
 
 fn select_payment(
