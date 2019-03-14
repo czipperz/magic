@@ -9,6 +9,7 @@ pub mod permanent;
 pub mod player;
 pub mod source;
 pub mod state;
+pub mod state_events;
 pub mod turn;
 pub mod ui;
 pub mod zone;

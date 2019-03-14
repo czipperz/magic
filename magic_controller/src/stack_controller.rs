@@ -9,7 +9,7 @@ use magic_core::ui::UserInterface;
 impl Controller {
     pub(super) fn trigger_register(&mut self, event: TurnEvent) {
         let event = Event::Turn(self.state.active_player, event);
-        self.trigger_event(event);
+        self.trigger_event(&event);
     }
 
     pub(super) fn trigger(&mut self, event: TurnEvent) {
@@ -23,26 +23,8 @@ impl Controller {
         self.cycle_priority();
     }
 
-    fn trigger_event(&mut self, event: Event) {
-        for player_number in self.state.players() {
-            let player = player_number.get(&self.state);
-            for instance in &player.battlefield {
-                let permanent = instance.get(&self.state).permanent(&self.state).unwrap();
-                for trigger in &permanent.triggers {
-                    if let Some(action) = trigger.respond(&self.state, *instance, &event) {
-                        let source = Source {
-                            controller: player_number,
-                            instance: *instance,
-                        };
-                        self.actions.push(SourcedAction {
-                            action_type: ActionType::TriggeredAbility,
-                            source,
-                            action,
-                        })
-                    }
-                }
-            }
-        }
+    fn trigger_event(&mut self, event: &Event) {
+        self.actions.append(&mut self.state.trigger(event))
     }
 
     fn build_stack(&mut self) {
