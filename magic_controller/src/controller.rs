@@ -1,13 +1,13 @@
-use crate::stack::Stack;
-use magic_core::action::SourcedAction;
+use magic_core::action::{ActionResolver, ActivatedAction, SourcedAction};
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
+use std::sync::Arc;
 
 pub struct Controller {
     pub(crate) ui: Box<UserInterface>,
     pub(crate) state: State,
     pub(crate) actions: Vec<SourcedAction>,
-    pub(crate) stack: Stack,
+    pub(crate) stack: Vec<(Arc<ActionResolver>, ActivatedAction)>,
 }
 
 impl Controller {
@@ -16,7 +16,7 @@ impl Controller {
             ui: Box::new(ui),
             state,
             actions: Vec::new(),
-            stack: Stack::default(),
+            stack: Vec::new(),
         }
     }
 

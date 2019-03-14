@@ -1,5 +1,4 @@
 use crate::controller::Controller;
-use crate::stack::Stack;
 use magic_core::action::*;
 use magic_core::event::{Event, TurnEvent};
 use magic_core::mana::{ManaCost, ManaPayment};
@@ -51,10 +50,8 @@ impl Controller {
         let actions = std::mem::replace(&mut self.actions, Vec::new());
         for action in actions {
             let resolve = action.action.resolve.clone();
-            if let Some(activated) =
-                activate(&mut *self.ui, &mut self.state, &mut self.stack, action)
-            {
-                self.stack.push(resolve, activated);
+            if let Some(activated) = activate(&mut *self.ui, &mut self.state, action) {
+                self.stack.push((resolve, activated));
             }
         }
     }
@@ -72,7 +69,6 @@ impl Controller {
 fn activate(
     ui: &mut UserInterface,
     state: &mut State,
-    stack: &mut Stack,
     action: SourcedAction,
 ) -> Option<ActivatedAction> {
     // resolve targets
@@ -93,7 +89,7 @@ fn activate(
                 _ => false,
             })
     {
-        allow_mana_ability_responses(ui, state, stack);
+        allow_mana_ability_responses(ui, state);
     }
 
     // resolve payments
@@ -129,20 +125,21 @@ fn activate(
     }
 }
 
-fn allow_mana_ability_responses(
-    ui: &mut UserInterface,
-    state: &mut State,
-    stack: &mut Stack,
-) -> Vec<Event> {
+fn allow_mana_ability_responses(ui: &mut UserInterface, state: &mut State) -> Vec<Event> {
     let mut events = Vec::new();
     while let Some(ability) = ui.maybe_trigger_mana_ability(state) {
-        let resolve = ability.action.resolve.clone();
-        if let Some(activated) = activate(ui, state, stack, ability) {
+        let resolver = ability.action.resolve.clone();
+        if let Some(activated) = activate(ui, state, ability) {
             assert_eq!(activated.action_type, ActionType::ActivatedAbility);
-            stack.push(resolve, activated);
-            events.append(&mut stack.pop(state).unwrap());
+            events.append(&mut resolve(state, &*resolver, activated));
         }
     }
+    events
+}
+
+fn resolve(state: &State, resolver: &ActionResolver, activated: ActivatedAction) -> Vec<Event> {
+    let events = resolver.resolve(state, activated);
+    // TODO: run replacement effects
     events
 }
 
