@@ -4,11 +4,16 @@ use std::ops::{Deref, DerefMut};
 #[derive(Clone, Debug, Default)]
 pub struct ManaCost {
     pub pool: ManaPool,
+    pub generic: usize,
 }
 
 impl ManaCost {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn converted(&self) -> usize {
+        self.pool.converted() + self.generic
     }
 
     pub fn with_blue(mut self, blue: usize) -> Self {
@@ -35,6 +40,7 @@ impl ManaCost {
         self.colorless = colorless;
         self
     }
+
     pub fn with_generic(mut self, generic: usize) -> Self {
         self.generic = generic;
         self

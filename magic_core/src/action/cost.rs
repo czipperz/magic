@@ -1,13 +1,13 @@
 use crate::count::Count;
 use crate::instance::InstanceNumber;
-use crate::mana::{ManaCost, ManaPool};
+use crate::mana::{ManaCost, ManaPayment};
 use crate::permanent::PermanentNumber;
 use crate::state::State;
 use std::sync::Arc;
 
 /// The payment supplied to satisfy the `Cost`.
 pub enum Payment {
-    Mana(ManaPool),
+    Mana(ManaPayment),
     Sacrifice(Vec<InstanceNumber>),
 }
 

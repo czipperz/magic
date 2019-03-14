@@ -2,7 +2,7 @@ use crate::controller::Controller;
 use crate::stack::Stack;
 use magic_core::action::*;
 use magic_core::event::{Event, TurnEvent};
-use magic_core::mana::ManaCost;
+use magic_core::mana::{ManaCost, ManaPayment};
 use magic_core::source::Source;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
@@ -165,8 +165,8 @@ fn select_payment(
 
 fn select_mana(_ui: &mut UserInterface, _state: &State, cost: ManaCost) -> Option<Payment> {
     // must update to support new forms of mana
-    let ManaCost { pool } = cost;
-    Some(Payment::Mana(pool))
+    let ManaCost { pool, generic } = cost;
+    Some(Payment::Mana(ManaPayment { pool, generic }))
 }
 
 fn select_sacrifice(
