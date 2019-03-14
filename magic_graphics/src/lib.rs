@@ -1,4 +1,5 @@
 use magic_core::action::{SourcedAction, Target, TargetDescription};
+use magic_core::instance::InstanceNumber;
 use magic_core::source::Source;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
@@ -22,6 +23,10 @@ impl UserInterface for GraphicalUserInterface {
     }
 
     fn maybe_trigger_mana_ability(&mut self, _state: &State) -> Option<SourcedAction> {
+        unimplemented!()
+    }
+
+    fn read_bool(&mut self, _state: &State, _instance: InstanceNumber) -> bool {
         unimplemented!()
     }
 

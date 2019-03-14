@@ -63,9 +63,25 @@ fn activate(
         }
     }
 
+    // resolve payments to be payed
+    let instance = action.source.instance;
+    let optional_costs_selected = action
+        .action
+        .optional_costs
+        .into_iter()
+        .map(|cost| {
+            if ui.read_bool(state, instance) {
+                Some(cost)
+            } else {
+                None
+            }
+        })
+        .collect::<Vec<_>>();
+
+    // allow mana ability responses if casting a spell and there are mana costs
     if action.action_type == ActionType::Spell
         && (action.action.mandatory_costs.iter())
-            .chain(action.action.optional_costs.iter())
+            .chain(optional_costs_selected.iter().filter_map(|x| x.as_ref()))
             .any(|cost| match cost {
                 Cost::Mana(_) => true,
                 _ => false,
@@ -84,11 +100,21 @@ fn activate(
         }
     }
 
+    // Resolve optional payments.  We already know which ones will be payed.
     let mut optional_payments = Vec::new();
-    for optional_cost in action.action.optional_costs {
-        optional_payments.push(select_payment(ui, state, &action.source, optional_cost));
+    for optional_cost in optional_costs_selected {
+        if let Some(cost) = optional_cost {
+            if let Some(payment) = select_payment(ui, state, &action.source, cost) {
+                optional_payments.push(Some(payment))
+            } else {
+                return None;
+            }
+        } else {
+            optional_payments.push(None)
+        }
     }
 
+    // Attempt to actually pay the payments.  If we can't, don't do anything.
     if pay_payments(
         state,
         mandatory_payments

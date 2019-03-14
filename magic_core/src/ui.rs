@@ -1,4 +1,5 @@
 use crate::action::{SourcedAction, Target, TargetDescription};
+use crate::instance::InstanceNumber;
 use crate::source::Source;
 use crate::state::State;
 
@@ -27,6 +28,9 @@ pub trait UserInterface {
     /// This returns `None` if the user selected to stop triggering mana
     /// abilities.
     fn maybe_trigger_mana_ability(&mut self, state: &State) -> Option<SourcedAction>;
+
+    /// Let the user hit yes or no.  This allows for optional actions.
+    fn read_bool(&mut self, state: &State, instance: InstanceNumber) -> bool;
 
     fn display(&mut self, state: &State);
 }
