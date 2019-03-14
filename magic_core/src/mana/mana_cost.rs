@@ -1,5 +1,5 @@
 use crate::mana::ManaPool;
-use std::ops::{Deref, DerefMut};
+use std::ops::{Add, AddAssign, Deref, DerefMut};
 
 #[derive(Clone, Debug, Default)]
 pub struct ManaCost {
@@ -58,5 +58,21 @@ impl Deref for ManaCost {
 impl DerefMut for ManaCost {
     fn deref_mut(&mut self) -> &mut ManaPool {
         &mut self.pool
+    }
+}
+
+impl Add<&Self> for ManaCost {
+    type Output = ManaCost;
+
+    fn add(mut self, other: &ManaCost) -> ManaCost {
+        self += other;
+        self
+    }
+}
+
+impl AddAssign<&Self> for ManaCost {
+    fn add_assign(&mut self, other: &ManaCost) {
+        self.pool += &other.pool;
+        self.generic += other.generic;
     }
 }

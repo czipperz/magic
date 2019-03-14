@@ -1,4 +1,5 @@
 use crate::mana::Color;
+use std::ops::{Add, AddAssign};
 
 #[derive(Clone, Debug, Default)]
 pub struct ManaPool {
@@ -40,5 +41,25 @@ impl ManaPool {
             colors.push(Color::Colorless);
         }
         colors
+    }
+}
+
+impl Add<&Self> for ManaPool {
+    type Output = ManaPool;
+
+    fn add(mut self, other: &ManaPool) -> ManaPool {
+        self += other;
+        self
+    }
+}
+
+impl AddAssign<&Self> for ManaPool {
+    fn add_assign(&mut self, other: &ManaPool) {
+        self.blue += other.blue;
+        self.white += other.white;
+        self.green += other.green;
+        self.red += other.red;
+        self.black += other.black;
+        self.colorless += other.colorless;
     }
 }
