@@ -1,4 +1,5 @@
 use crate::instance::InstanceNumber;
+use crate::mana::ManaPool;
 use crate::state::State;
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
@@ -8,6 +9,7 @@ pub struct PlayerNumber {
 
 pub struct Player {
     pub health: i32,
+    pub floating_mana: ManaPool,
     pub deck: Vec<InstanceNumber>,
     pub hand: Vec<InstanceNumber>,
     pub battlefield: Vec<InstanceNumber>,
@@ -25,6 +27,7 @@ impl Player {
     pub fn new(health: i32, deck: Vec<InstanceNumber>) -> Self {
         Player {
             health,
+            floating_mana: ManaPool::default(),
             deck,
             hand: Vec::new(),
             battlefield: Vec::new(),
