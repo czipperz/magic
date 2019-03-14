@@ -1,7 +1,9 @@
 use crate::controller::Controller;
 use magic_core::action::*;
 use magic_core::event::{Event, TurnEvent};
-use magic_core::mana::{ManaCost, ManaPayment};
+use magic_core::instance::InstanceNumber;
+use magic_core::mana::{ManaCost, ManaPayment, ManaPool};
+use magic_core::player::PlayerNumber;
 use magic_core::source::Source;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
@@ -116,6 +118,7 @@ fn activate(
     // Attempt to actually pay the payments.  If we can't, don't do anything.
     if pay_payments(
         state,
+        action.source.controller,
         mandatory_payments
             .iter()
             .chain(optional_payments.iter().filter_map(|x| x.as_ref())),
@@ -190,6 +193,117 @@ fn select_sacrifice(
         })
 }
 
-fn pay_payments<'a, I: Iterator<Item = &'a Payment>>(_state: &mut State, _payments: I) -> bool {
-    unimplemented!()
+fn pay_payments<'a, I: Iterator<Item = &'a Payment>>(
+    state: &mut State,
+    player: PlayerNumber,
+    payments: I,
+) -> bool {
+    if let Some(payments) = unify_payments(payments) {
+        for payment in payments {
+            match payment {
+                Payment::Mana(payment) => {
+                    if !pay_mana_payment(state, player, payment) {
+                        return false;
+                    }
+                }
+                Payment::Sacrifice(sacrifices) => pay_sacrifices(state, player, sacrifices),
+            }
+        }
+        true
+    } else {
+        false
+    }
+}
+
+fn pay_mana_payment(state: &mut State, player: PlayerNumber, payment: ManaPayment) -> bool {
+    let ManaPayment {
+        pool:
+            ManaPool {
+                blue,
+                white,
+                green,
+                red,
+                black,
+                colorless,
+            },
+        mut generic,
+    } = payment;
+
+    // Ensure have enough colored mana.
+    let player_mana_pool = &mut state.player_mut(player).floating_mana;
+    let mut mana_pool = player_mana_pool.clone();
+    for (pooled, required) in vec![
+        (&mut mana_pool.blue, blue),
+        (&mut mana_pool.white, white),
+        (&mut mana_pool.green, green),
+        (&mut mana_pool.red, red),
+        (&mut mana_pool.black, black),
+        (&mut mana_pool.colorless, colorless),
+    ]
+    .into_iter()
+    {
+        if *pooled < required {
+            return false;
+        }
+        *pooled -= required;
+    }
+
+    // Ensure have enough mana to pay for generic
+    if mana_pool.converted() < generic {
+        return false;
+    }
+
+    // Pay for generic mana
+    for pool in vec![
+        &mut mana_pool.blue,
+        &mut mana_pool.white,
+        &mut mana_pool.green,
+        &mut mana_pool.red,
+        &mut mana_pool.black,
+        &mut mana_pool.colorless,
+    ]
+    .into_iter()
+    {
+        if generic > *pool {
+            generic -= *pool;
+            *pool = 0;
+        } else {
+            *pool -= generic;
+            break;
+        }
+    }
+
+    *player_mana_pool = mana_pool;
+    true
+}
+
+fn pay_sacrifices(_state: &mut State, _player: PlayerNumber, sacrifices: Vec<InstanceNumber>) {
+    for _sacrifice in sacrifices {
+        unimplemented!()
+    }
+}
+
+fn unify_payments<'a, I: Iterator<Item = &'a Payment>>(payments: I) -> Option<Vec<Payment>> {
+    use std::collections::HashSet;
+    let mut mana_payment = ManaPayment::default();
+    let mut sacrifice_payment = HashSet::new();
+    for payment in payments {
+        match payment {
+            Payment::Mana(mana) => {
+                mana_payment += mana;
+            }
+            Payment::Sacrifice(sacrifices) => {
+                for sacrifice in sacrifices {
+                    if !sacrifice_payment.insert(*sacrifice) {
+                        // It already is sacrificing this permanent
+                        return None;
+                    }
+                }
+            }
+        }
+    }
+    Some(vec![
+        Payment::Mana(mana_payment),
+        Payment::Sacrifice(sacrifice_payment.into_iter().collect()),
+    ])
 }
