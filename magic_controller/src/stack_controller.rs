@@ -53,7 +53,7 @@ fn activate(
     state: &mut State,
     action: SourcedAction,
 ) -> Option<ActivatedAction> {
-    // resolve targets
+    // Resolve targets
     let mut targets = Vec::new();
     for target_description in action.action.target_descriptions {
         if let Some(target) = ui.choose_target(state, &action.source, target_description) {
@@ -63,7 +63,7 @@ fn activate(
         }
     }
 
-    // resolve payments to be payed
+    // Resolve optional payments to be payed.  The ones chosen become mandatory.
     let instance = action.source.instance;
     let optional_costs_selected = action
         .action
@@ -78,7 +78,7 @@ fn activate(
         })
         .collect::<Vec<_>>();
 
-    // allow mana ability responses if casting a spell and there are mana costs
+    // Allow mana ability responses if casting a spell and there are mana costs.
     if action.action_type == ActionType::Spell
         && (action.action.mandatory_costs.iter())
             .chain(optional_costs_selected.iter().filter_map(|x| x.as_ref()))
@@ -90,7 +90,7 @@ fn activate(
         allow_mana_ability_responses(ui, state);
     }
 
-    // resolve payments
+    // Select how to pay costs.  Abort (return None) if payment is not selected.
     let mut mandatory_payments = Vec::new();
     for mandatory_cost in action.action.mandatory_costs {
         if let Some(payment) = select_payment(ui, state, &action.source, mandatory_cost) {
@@ -100,7 +100,6 @@ fn activate(
         }
     }
 
-    // Resolve optional payments.  We already know which ones will be payed.
     let mut optional_payments = Vec::new();
     for optional_cost in optional_costs_selected {
         if let Some(cost) = optional_cost {
