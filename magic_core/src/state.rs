@@ -116,6 +116,10 @@ impl State {
         &self.players[player.number]
     }
 
+    pub fn player_mut(&mut self, player: PlayerNumber) -> &mut Player {
+        &mut self.players[player.number]
+    }
+
     pub(crate) fn card(&self, card: CardNumber) -> &Card {
         &self.cards[card.number]
     }
