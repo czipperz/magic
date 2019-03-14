@@ -2,6 +2,7 @@ use crate::action::{Action, Target, Trigger};
 use crate::card::{Attribute, Subtype, Type};
 use crate::instance::{Instance, InstanceNumber};
 use crate::mana::Color;
+use crate::replacement_effect::ReplacementEffect;
 use crate::state::State;
 use std::sync::Arc;
 
@@ -22,6 +23,7 @@ pub struct Permanent {
     pub attributes: Vec<Attribute>,
     pub abilities: Vec<Action>,
     pub triggers: Vec<Arc<Trigger>>,
+    pub replacement_effects: Vec<Arc<ReplacementEffect>>,
     pub color_words: Vec<Color>,
     pub power: Option<isize>,
     pub toughness: Option<isize>,

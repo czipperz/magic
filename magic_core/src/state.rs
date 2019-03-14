@@ -71,6 +71,7 @@ impl State {
             attributes: card.attributes.clone(),
             abilities: card.abilities.clone(),
             triggers: card.triggers.clone(),
+            replacement_effects: card.replacement_effects.clone(),
             color_words: card.color_words.clone(),
             power: card.power.clone(),
             toughness: card.toughness.clone(),

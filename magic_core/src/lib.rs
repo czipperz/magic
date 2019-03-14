@@ -7,6 +7,7 @@ pub mod instance;
 pub mod mana;
 pub mod permanent;
 pub mod player;
+pub mod replacement_effect;
 pub mod source;
 pub mod state;
 pub mod state_events;

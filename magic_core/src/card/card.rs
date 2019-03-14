@@ -2,6 +2,7 @@ use super::{Attribute, Subtype, Type};
 use crate::action::{Action, Cost, TargetDescription, Trigger};
 use crate::effect::{DoNothingEffect, Effect};
 use crate::mana::{Color, ManaCost};
+use crate::replacement_effect::ReplacementEffect;
 use crate::state::State;
 use std::sync::Arc;
 
@@ -23,6 +24,7 @@ pub struct Card {
 
     pub abilities: Vec<Action>,
     pub triggers: Vec<Arc<Trigger>>,
+    pub replacement_effects: Vec<Arc<ReplacementEffect>>,
     pub effect: Box<Effect>,
     pub color_words: Vec<Color>,
 
@@ -54,6 +56,7 @@ impl Card {
 
             abilities: Vec::new(),
             triggers: Vec::new(),
+            replacement_effects: Vec::new(),
             effect: Box::new(DoNothingEffect),
             color_words: Vec::new(),
 
@@ -118,6 +121,14 @@ impl Card {
 
     pub fn with_trigger(mut self, trigger: impl Trigger + 'static) -> Self {
         self.triggers.push(Arc::new(trigger));
+        self
+    }
+
+    pub fn with_replacement_effect(
+        mut self,
+        replacement_effect: impl ReplacementEffect + 'static,
+    ) -> Self {
+        self.replacement_effects.push(Arc::new(replacement_effect));
         self
     }
 
