@@ -121,8 +121,7 @@ fn allow_mana_ability_responses(ui: &mut UserInterface, state: &mut State) -> Ve
 
 fn resolve(state: &State, resolver: &ActionResolver, activated: ActivatedAction) -> Vec<Event> {
     let events = resolver.resolve(state, activated);
-    // TODO: run replacement effects
-    events
+    state.replacement_effects(events)
 }
 
 fn select_payment(

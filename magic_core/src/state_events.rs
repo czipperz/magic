@@ -27,4 +27,8 @@ impl State {
         }
         actions
     }
+
+    pub fn replacement_effects(&self, initial_events: Vec<Event>) -> Vec<Event> {
+        initial_events
+    }
 }
