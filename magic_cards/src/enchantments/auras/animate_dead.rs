@@ -25,7 +25,6 @@ pub fn animate_dead() -> Card {
 
 fn is_creature(state: &State, instance: InstanceNumber) -> bool {
     instance
-        .get(state)
         .card(state)
         .types
         .contains(&Type::Creature)
@@ -48,7 +47,7 @@ struct AnimateDeadEnterTheBattlefieldAction;
 impl ActionResolver for AnimateDeadEnterTheBattlefieldAction {
     fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event> {
         let aura_instance = action.source.instance;
-        let aura = aura_instance.get(state).permanent(state).unwrap();
+        let aura = aura_instance.permanent(state).unwrap();
         match &aura.affecting {
             Some(Target::Graveyard(creatures)) => {
                 assert_eq!(creatures.len(), 1);

@@ -12,7 +12,7 @@ impl State {
         for player_number in self.players() {
             let player = player_number.get(&self);
             for instance in &player.battlefield {
-                let permanent = instance.get(&self).permanent(&self).unwrap();
+                let permanent = instance.permanent(&self).unwrap();
                 for trigger in &permanent.triggers {
                     if let Some(action) = trigger.respond(&self, *instance, &event) {
                         let source = Source {
@@ -56,7 +56,7 @@ impl State {
         for player_number in self.players() {
             let player = player_number.get(&self);
             for instance in &player.battlefield {
-                let permanent = instance.get(&self).permanent(&self).unwrap();
+                let permanent = instance.permanent(&self).unwrap();
                 for (index, replacement_effect) in permanent.replacement_effects.iter().enumerate()
                 {
                     if !history.contains(&(*instance, index)) {

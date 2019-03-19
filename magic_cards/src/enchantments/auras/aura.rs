@@ -51,7 +51,7 @@ impl Trigger for EnterTheBattlefieldAttachIfNot {
                 _,
                 StateEvent::Card(card, CardEvent::MoveTo(_, _, _, Zone::Battlefield)),
             ) if *card == instance => {
-                if let Some(permanent) = card.get(state).permanent(state) {
+                if let Some(permanent) = card.permanent(state) {
                     if permanent.affecting.is_none() {
                         return Some(Action::from(AttachAura).with_target(self.target.clone()));
                     }

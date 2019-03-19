@@ -25,6 +25,18 @@ impl InstanceNumber {
     pub fn card<'a>(self, state: &'a State) -> &'a Card {
         self.get(state).card(state)
     }
+
+    pub fn permanent<'a>(self, state: &'a State) -> Option<&'a Permanent> {
+        self.get(state).permanent(state)
+    }
+
+    pub fn owner<'a>(self, state: &'a State) -> &'a Player {
+        self.get(state).owner(state)
+    }
+
+    pub fn controller<'a>(self, state: &'a State) -> &'a Player {
+        self.get(state).controller(state)
+    }
 }
 
 impl Instance {

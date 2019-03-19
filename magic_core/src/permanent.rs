@@ -35,6 +35,10 @@ impl PermanentNumber {
     pub fn get<'a>(self, state: &'a State) -> &'a Permanent {
         state.permanent(self)
     }
+
+    pub fn instance<'a>(self, state: &'a State) -> &'a Instance {
+        self.get(state).instance(state)
+    }
 }
 
 impl Permanent {
