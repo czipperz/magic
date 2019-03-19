@@ -20,6 +20,7 @@ fn is_artifact(state: &State, permanent: PermanentNumber) -> bool {
     permanent.get(state).types.contains(&Type::Artifact)
 }
 
+#[derive(Debug)]
 struct AnimateArtifactEffect;
 impl Effect for AnimateArtifactEffect {
     fn affect(&self, state: &State, permanent: &mut Permanent) {

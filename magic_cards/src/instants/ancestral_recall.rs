@@ -13,8 +13,8 @@ pub fn ancestral_recall() -> Card {
     .with_target(TargetDescription::player(1, |_, _| true))
 }
 
+#[derive(Debug)]
 struct CastAncestralRecall;
-
 impl ActionResolver for CastAncestralRecall {
     fn resolve(&self, _: &State, action: ActivatedAction) -> Vec<Event> {
         if let Target::Player(players) = &action.targets[0] {

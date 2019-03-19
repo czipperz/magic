@@ -17,6 +17,7 @@ fn is_wall(state: &State, instance: PermanentNumber) -> bool {
     instance.get(state).subtypes.contains(&Subtype::Wall)
 }
 
+#[derive(Debug)]
 struct AnimateWallEffect;
 impl Effect for AnimateWallEffect {
     fn affect(&self, _: &State, permanent: &mut Permanent) {

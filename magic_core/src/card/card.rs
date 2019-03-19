@@ -4,6 +4,7 @@ use crate::effect::{DoNothingEffect, Effect};
 use crate::mana::{Color, ManaCost};
 use crate::replacement_effect::ReplacementEffect;
 use crate::state::State;
+use by_address::ByAddress;
 use std::sync::Arc;
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
@@ -14,6 +15,7 @@ pub struct CardNumber {
 /// A `Card` represents the information written on a physical card.
 ///
 /// To information about where the `Card` is located, see `Instance`.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Card {
     pub name: String,
     pub cast_action: Action,
@@ -23,9 +25,9 @@ pub struct Card {
     pub attributes: Vec<Attribute>,
 
     pub abilities: Vec<Action>,
-    pub triggers: Vec<Arc<Trigger>>,
-    pub replacement_effects: Vec<Arc<ReplacementEffect>>,
-    pub effect: Box<Effect>,
+    pub triggers: Vec<ByAddress<Arc<Trigger>>>,
+    pub replacement_effects: Vec<ByAddress<Arc<ReplacementEffect>>>,
+    pub effect: ByAddress<Arc<Effect>>,
     pub color_words: Vec<Color>,
 
     pub power: Option<isize>,
@@ -57,7 +59,7 @@ impl Card {
             abilities: Vec::new(),
             triggers: Vec::new(),
             replacement_effects: Vec::new(),
-            effect: Box::new(DoNothingEffect),
+            effect: ByAddress(Arc::new(DoNothingEffect)),
             color_words: Vec::new(),
 
             power: None,
@@ -120,7 +122,7 @@ impl Card {
     }
 
     pub fn with_trigger(mut self, trigger: impl Trigger + 'static) -> Self {
-        self.triggers.push(Arc::new(trigger));
+        self.triggers.push(ByAddress(Arc::new(trigger)));
         self
     }
 
@@ -128,12 +130,13 @@ impl Card {
         mut self,
         replacement_effect: impl ReplacementEffect + 'static,
     ) -> Self {
-        self.replacement_effects.push(Arc::new(replacement_effect));
+        self.replacement_effects
+            .push(ByAddress(Arc::new(replacement_effect)));
         self
     }
 
     pub fn with_effect(mut self, effect: impl Effect + 'static) -> Self {
-        self.effect = Box::new(effect);
+        self.effect = ByAddress(Arc::new(effect));
         self
     }
 

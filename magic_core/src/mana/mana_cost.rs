@@ -1,7 +1,7 @@
 use crate::mana::ManaPool;
 use std::ops::{Add, AddAssign, Deref, DerefMut};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct ManaCost {
     pub pool: ManaPool,
     pub generic: usize,

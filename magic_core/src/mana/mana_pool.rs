@@ -1,7 +1,7 @@
 use crate::mana::Color;
 use std::ops::{Add, AddAssign};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct ManaPool {
     pub blue: usize,
     pub white: usize,

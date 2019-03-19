@@ -7,6 +7,7 @@ pub struct PlayerNumber {
     pub(crate) number: usize,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Player {
     pub health: i32,
     pub floating_mana: ManaPool,

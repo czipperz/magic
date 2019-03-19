@@ -9,6 +9,7 @@ pub fn put_on_battlefield(state: &State, source: Source) -> Event {
     Event::move_to_zone(state, source, instance, Zone::Battlefield)
 }
 
+#[derive(Debug)]
 pub struct CastPermanent;
 impl ActionResolver for CastPermanent {
     fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event> {

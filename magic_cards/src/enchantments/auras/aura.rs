@@ -31,6 +31,7 @@ fn attach(action: ActivatedAction) -> Event {
     )
 }
 
+#[derive(Debug)]
 struct CastAura;
 impl ActionResolver for CastAura {
     fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event> {
@@ -41,6 +42,7 @@ impl ActionResolver for CastAura {
     }
 }
 
+#[derive(Debug)]
 struct EnterTheBattlefieldAttachIfNot {
     target: TargetDescription,
 }
@@ -63,6 +65,7 @@ impl Trigger for EnterTheBattlefieldAttachIfNot {
     }
 }
 
+#[derive(Debug)]
 struct AttachAura;
 impl ActionResolver for AttachAura {
     fn resolve(&self, _state: &State, action: ActivatedAction) -> Vec<Event> {

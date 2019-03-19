@@ -2,6 +2,8 @@ use super::{Cost, Payment, Target, TargetDescription};
 use crate::event::Event;
 use crate::source::Source;
 use crate::state::State;
+use by_address::ByAddress;
+use std::fmt::Debug;
 use std::sync::Arc;
 
 /// This structure represents the actions a `Card` has.
@@ -24,25 +26,27 @@ use std::sync::Arc;
 ///
 /// An example of an activated ability that uses an `Action` is Cycle.
 /// Another is Equip.
-#[derive(Clone)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Action {
-    pub resolve: Arc<ActionResolver>,
+    pub resolve: ByAddress<Arc<ActionResolver>>,
     pub target_descriptions: Vec<TargetDescription>,
     pub mandatory_costs: Vec<Cost>,
     pub optional_costs: Vec<Cost>,
     pub is_mana_ability: bool,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SourcedAction {
     pub action_type: ActionType,
     pub source: Source,
     pub action: Action,
 }
 
-pub trait ActionResolver {
+pub trait ActionResolver: Debug {
     fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event>;
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ActivatedAction {
     pub action_type: ActionType,
     pub source: Source,
@@ -64,7 +68,7 @@ where
 {
     fn from(resolve: R) -> Self {
         Action {
-            resolve: Arc::new(resolve),
+            resolve: ByAddress(Arc::new(resolve)),
             mandatory_costs: Vec::new(),
             optional_costs: Vec::new(),
             target_descriptions: Vec::new(),

@@ -18,6 +18,7 @@ pub fn ankh_of_mishra() -> Card {
     .with_trigger(AnkhOfMishraTrigger)
 }
 
+#[derive(Debug)]
 struct AnkhOfMishraTrigger;
 impl Trigger for AnkhOfMishraTrigger {
     fn respond(&self, state: &State, _ankh: InstanceNumber, event: &Event) -> Option<Action> {
@@ -35,6 +36,7 @@ impl Trigger for AnkhOfMishraTrigger {
     }
 }
 
+#[derive(Debug)]
 struct AnkhOfMishraAction {
     controller: PlayerNumber,
 }

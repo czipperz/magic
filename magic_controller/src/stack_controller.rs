@@ -35,7 +35,7 @@ impl Controller {
         for action in actions {
             let resolve = action.action.resolve.clone();
             if let Some(activated) = activate(&mut *self.ui, &mut self.state, action) {
-                self.stack.push((resolve, activated));
+                self.stack.push((resolve.0, activated));
             }
         }
     }
@@ -141,7 +141,7 @@ fn allow_mana_ability_responses(ui: &mut UserInterface, state: &mut State) -> Ve
         let resolver = ability.action.resolve.clone();
         if let Some(activated) = activate(ui, state, ability) {
             assert_eq!(activated.action_type, ActionType::ActivatedAbility);
-            events.append(&mut resolve(state, ui, &*resolver, activated));
+            events.append(&mut resolve(state, ui, &**resolver, activated));
         }
     }
     events

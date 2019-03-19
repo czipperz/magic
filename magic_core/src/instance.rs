@@ -9,6 +9,7 @@ pub struct InstanceNumber {
     pub(crate) number: usize,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Instance {
     pub card: CardNumber,
     pub permanent: Option<PermanentNumber>,

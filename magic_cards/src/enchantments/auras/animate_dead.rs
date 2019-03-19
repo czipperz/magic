@@ -24,12 +24,10 @@ pub fn animate_dead() -> Card {
 }
 
 fn is_creature(state: &State, instance: InstanceNumber) -> bool {
-    instance
-        .card(state)
-        .types
-        .contains(&Type::Creature)
+    instance.card(state).types.contains(&Type::Creature)
 }
 
+#[derive(Debug)]
 struct AnimateDeadEnterTheBattlefieldTrigger;
 impl Trigger for AnimateDeadEnterTheBattlefieldTrigger {
     fn respond(&self, _state: &State, instance: InstanceNumber, event: &Event) -> Option<Action> {
@@ -43,6 +41,7 @@ impl Trigger for AnimateDeadEnterTheBattlefieldTrigger {
     }
 }
 
+#[derive(Debug)]
 struct AnimateDeadEnterTheBattlefieldAction;
 impl ActionResolver for AnimateDeadEnterTheBattlefieldAction {
     fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event> {
@@ -68,6 +67,7 @@ impl ActionResolver for AnimateDeadEnterTheBattlefieldAction {
     }
 }
 
+#[derive(Debug)]
 struct AnimateDeadEffect;
 impl Effect for AnimateDeadEffect {
     fn affect(&self, _: &State, permanent: &mut Permanent) {

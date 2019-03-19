@@ -1,7 +1,7 @@
 /// The number of things to select.
 ///
 /// Maximum is exclusive.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Count {
     pub minimum: usize,
     pub maximum: Option<usize>,
