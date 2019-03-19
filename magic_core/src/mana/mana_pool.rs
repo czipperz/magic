@@ -60,3 +60,37 @@ impl AddAssign<&Self> for ManaPool {
         self.colorless += other.colorless;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_colors_empty() {
+        assert_eq!(ManaPool::default().colors(), vec![]);
+    }
+
+    #[test]
+    fn test_colors_multi() {
+        let mut pool = ManaPool::default();
+        pool.blue = 1;
+        pool.red = 1;
+        assert_eq!(pool.colors(), vec![Color::Blue, Color::Red]);
+    }
+
+    #[test]
+    fn test_colors_colorless() {
+        let mut pool = ManaPool::default();
+        pool.blue = 1;
+        pool.colorless = 1;
+        assert_eq!(pool.colors(), vec![Color::Blue]);
+    }
+
+    #[test]
+    fn test_converted_include_colorless() {
+        let mut pool = ManaPool::default();
+        pool.black = 10;
+        pool.colorless = 2;
+        assert_eq!(pool.converted(), 12);
+    }
+}
