@@ -200,4 +200,47 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn test_trigger_card_mixture_trigger_notrigger_on_battlefield() {
+        let card_trigger = mock_card().with_trigger(AlwaysTrigger).build();
+        let card_notrigger = mock_card().build();
+        let mut state = State::new(
+            20,
+            vec![
+                vec![
+                    card_trigger.clone(),
+                    card_notrigger.clone(),
+                    card_notrigger,
+                    card_trigger,
+                ],
+                vec![],
+            ],
+        );
+        for index in &[0, 2 /* really 3 */] {
+            let player_number = PlayerNumber { number: 0 };
+            let player = state.player_mut(player_number);
+            let instance = player.deck.remove(*index);
+            player.battlefield.push(instance);
+            state.add_permanent(instance);
+        }
+
+        let event = Event::Turn(
+            PlayerNumber { number: 0 },
+            TurnEvent::BeginPhase(Phase::Beginning),
+        );
+        let actions = state.trigger(&event);
+        assert_eq!(actions.len(), 2);
+        for i in 0..=1 {
+            let action = &actions[i];
+            assert_eq!(action.action_type, ActionType::TriggeredAbility);
+            assert_eq!(
+                action.source,
+                Source {
+                    instance: InstanceNumber { number: [0, 3][i] },
+                    controller: PlayerNumber { number: 0 },
+                }
+            );
+        }
+    }
 }
