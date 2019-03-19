@@ -1,16 +1,16 @@
 use magic_core::action::{ActionResolver, ActivatedAction, Target, TargetDescription};
-use magic_core::card::Card;
+use magic_core::card::{Card, CardBuilder};
 use magic_core::event::*;
 use magic_core::mana::ManaCost;
 use magic_core::state::State;
 
 pub fn ancestral_recall() -> Card {
-    Card::new(
-        "Ancestral Recall",
-        ManaCost::new().with_blue(1),
-        CastAncestralRecall,
-    )
-    .with_target(TargetDescription::player(1, |_, _| true))
+    CardBuilder::new()
+        .with_name("Ancestral Recall")
+        .with_mana_cost(ManaCost::new().with_blue(1))
+        .on_resolve(CastAncestralRecall)
+        .with_target(TargetDescription::player(1, |_, _| true))
+        .build()
 }
 
 #[derive(Debug)]

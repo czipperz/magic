@@ -37,3 +37,20 @@ impl Player {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        let player = Player::new(20, vec![]);
+        assert_eq!(player.health, 20);
+        assert_eq!(player.floating_mana, ManaPool::default());
+        assert_eq!(player.deck, vec![]);
+        assert_eq!(player.hand, vec![]);
+        assert_eq!(player.battlefield, vec![]);
+        assert_eq!(player.graveyard, vec![]);
+        assert_eq!(player.exile, vec![]);
+    }
+}

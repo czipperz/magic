@@ -11,6 +11,7 @@ pub mod replacement_effect;
 pub mod source;
 pub mod state;
 pub mod state_events;
+pub mod test_util;
 pub mod turn;
 pub mod ui;
 pub mod zone;

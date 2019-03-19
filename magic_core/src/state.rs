@@ -136,3 +136,34 @@ impl State {
         &self.permanents[permanent.number]
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        let state = State::new(20, vec![]);
+        assert_eq!(state.players, vec![]);
+        assert_eq!(state.active_player, PlayerNumber { number: 0 });
+        assert_eq!(state.cards, vec![]);
+        assert_eq!(state.instances, vec![]);
+        assert_eq!(state.permanents, vec![]);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_player_out_of_bounds() {
+        let state = State::new(20, vec![]);
+        state.player(PlayerNumber { number: 0 });
+    }
+
+    #[test]
+    fn test_player_in_bounds() {
+        let state = State::new(20, vec![vec![]]);
+        assert_eq!(
+            *state.player(PlayerNumber { number: 0 }),
+            Player::new(20, vec![])
+        );
+    }
+}

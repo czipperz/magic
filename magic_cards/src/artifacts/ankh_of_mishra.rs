@@ -1,6 +1,6 @@
 use crate::cast::CastPermanent;
 use magic_core::action::{Action, ActionResolver, ActivatedAction, Trigger};
-use magic_core::card::{Card, Type};
+use magic_core::card::{Card, CardBuilder, Type};
 use magic_core::event::*;
 use magic_core::instance::InstanceNumber;
 use magic_core::mana::ManaCost;
@@ -9,13 +9,13 @@ use magic_core::state::State;
 use magic_core::zone::Zone;
 
 pub fn ankh_of_mishra() -> Card {
-    Card::new(
-        "Ankh of Mishra",
-        ManaCost::new().with_generic(2),
-        CastPermanent,
-    )
-    .with_type(Type::Artifact)
-    .with_trigger(AnkhOfMishraTrigger)
+    CardBuilder::new()
+        .with_name("Ankh of Mishra")
+        .with_mana_cost(ManaCost::new().with_generic(2))
+        .on_resolve(CastPermanent)
+        .with_type(Type::Artifact)
+        .with_trigger(AnkhOfMishraTrigger)
+        .build()
 }
 
 #[derive(Debug)]

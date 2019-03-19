@@ -12,15 +12,14 @@ use magic_core::state::State;
 use magic_core::zone::Zone;
 
 pub fn animate_dead() -> Card {
-    aura(
-        "Animate Dead",
-        ManaCost::new().with_black(1).with_generic(1),
-        TargetDescription::graveyard(1, is_creature),
-    )
-    .with_type(Type::Enchantment)
-    .with_subtype(Subtype::Aura)
-    .with_trigger(AnimateDeadEnterTheBattlefieldTrigger)
-    .with_effect(AnimateDeadEffect)
+    aura(TargetDescription::graveyard(1, is_creature))
+        .with_name("Animate Dead")
+        .with_mana_cost(ManaCost::new().with_black(1).with_generic(1))
+        .with_type(Type::Enchantment)
+        .with_subtype(Subtype::Aura)
+        .with_trigger(AnimateDeadEnterTheBattlefieldTrigger)
+        .with_effect(AnimateDeadEffect)
+        .build()
 }
 
 fn is_creature(state: &State, instance: InstanceNumber) -> bool {

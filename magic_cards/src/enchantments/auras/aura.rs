@@ -1,23 +1,21 @@
 use crate::cast::put_on_battlefield;
 use magic_core::action::*;
-use magic_core::card::Card;
+use magic_core::card::CardBuilder;
 use magic_core::event::*;
 use magic_core::instance::InstanceNumber;
-use magic_core::mana::ManaCost;
 use magic_core::permanent::PermanentNumber;
 use magic_core::state::State;
 use magic_core::zone::Zone;
 
 pub fn aura_permanent(
-    name: impl ToString,
-    mana_cost: ManaCost,
     predicate: impl Fn(&State, PermanentNumber) -> bool + 'static,
-) -> Card {
-    aura(name, mana_cost, TargetDescription::permanent(1, predicate))
+) -> CardBuilder {
+    aura(TargetDescription::permanent(1, predicate))
 }
 
-pub fn aura(name: impl ToString, mana_cost: ManaCost, target: TargetDescription) -> Card {
-    Card::new(name, mana_cost, CastAura)
+pub fn aura(target: TargetDescription) -> CardBuilder {
+    CardBuilder::new()
+        .on_resolve(CastAura)
         .with_target(target.clone())
         .with_trigger(EnterTheBattlefieldAttachIfNot { target })
 }

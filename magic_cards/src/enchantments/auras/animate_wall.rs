@@ -7,10 +7,13 @@ use magic_core::permanent::PermanentNumber;
 use magic_core::state::State;
 
 pub fn animate_wall() -> Card {
-    aura_permanent("Animate Wall", ManaCost::new().with_white(1), is_wall)
+    aura_permanent(is_wall)
+        .with_name("Animate Wall")
+        .with_mana_cost(ManaCost::new().with_white(1))
         .with_type(Type::Enchantment)
         .with_subtype(Subtype::Aura)
         .with_effect(AnimateWallEffect)
+        .build()
 }
 
 fn is_wall(state: &State, instance: PermanentNumber) -> bool {
