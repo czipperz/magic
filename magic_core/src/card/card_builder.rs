@@ -192,12 +192,83 @@ mod tests {
             .with_name("Mock")
             .with_mana_cost(mana_cost.clone())
             .on_resolve(MockResolve);
+
         assert_eq!(builder.colors, Some(vec![]));
         assert_eq!(
             builder.cast_mandatory_costs,
             vec![Cost::Mana(mana_cost.clone())]
         );
+
         let card = builder.build();
+        assert_eq!(card.colors, vec![]);
+        assert_eq!(
+            card.cast_action.mandatory_costs,
+            vec![Cost::Mana(mana_cost)]
+        );
+    }
+
+    #[test]
+    fn test_mana_cost_colored() {
+        let mana_cost = ManaCost::default().with_red(1).with_blue(1);
+        let builder = CardBuilder::new()
+            .with_name("Mock")
+            .with_mana_cost(mana_cost.clone())
+            .on_resolve(MockResolve);
+
+        assert_eq!(builder.colors, Some(vec![Color::Blue, Color::Red]));
+        assert_eq!(
+            builder.cast_mandatory_costs,
+            vec![Cost::Mana(mana_cost.clone())]
+        );
+
+        let card = builder.build();
+        assert_eq!(card.colors, vec![Color::Blue, Color::Red]);
+        assert_eq!(
+            card.cast_action.mandatory_costs,
+            vec![Cost::Mana(mana_cost)]
+        );
+    }
+
+    #[test]
+    fn test_mana_cost_colored_before_custom_card_colors() {
+        let mana_cost = ManaCost::default().with_red(1).with_blue(1);
+        let builder = CardBuilder::new()
+            .with_name("Mock")
+            .with_mana_cost(mana_cost.clone())
+            .with_colors(vec![])
+            .on_resolve(MockResolve);
+
+        assert_eq!(builder.colors, Some(vec![]));
+        assert_eq!(
+            builder.cast_mandatory_costs,
+            vec![Cost::Mana(mana_cost.clone())]
+        );
+
+        let card = builder.build();
+        assert_eq!(card.colors, vec![]);
+        assert_eq!(
+            card.cast_action.mandatory_costs,
+            vec![Cost::Mana(mana_cost)]
+        );
+    }
+
+    #[test]
+    fn test_mana_cost_colored_after_custom_card_colors() {
+        let mana_cost = ManaCost::default().with_red(1).with_blue(1);
+        let builder = CardBuilder::new()
+            .with_name("Mock")
+            .with_colors(vec![])
+            .with_mana_cost(mana_cost.clone())
+            .on_resolve(MockResolve);
+
+        assert_eq!(builder.colors, Some(vec![]));
+        assert_eq!(
+            builder.cast_mandatory_costs,
+            vec![Cost::Mana(mana_cost.clone())]
+        );
+
+        let card = builder.build();
+        assert_eq!(card.colors, vec![]);
         assert_eq!(
             card.cast_action.mandatory_costs,
             vec![Cost::Mana(mana_cost)]
