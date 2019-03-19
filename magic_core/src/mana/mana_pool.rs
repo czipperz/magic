@@ -37,9 +37,6 @@ impl ManaPool {
         if self.black != 0 {
             colors.push(Color::Black);
         }
-        if self.colorless != 0 {
-            colors.push(Color::Colorless);
-        }
         colors
     }
 }
