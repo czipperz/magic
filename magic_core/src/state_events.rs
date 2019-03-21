@@ -217,7 +217,7 @@ mod tests {
                 vec![],
             ],
         );
-        for index in &[0, 2 /* really 3 */] {
+        for index in &[3, 0] {
             let player_number = PlayerNumber { number: 0 };
             let player = state.player_mut(player_number);
             let instance = player.deck.remove(*index);
@@ -237,7 +237,7 @@ mod tests {
             assert_eq!(
                 action.source,
                 Source {
-                    instance: InstanceNumber { number: [0, 3][i] },
+                    instance: InstanceNumber { number: [3, 0][i] },
                     controller: PlayerNumber { number: 0 },
                 }
             );
