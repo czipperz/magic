@@ -1,31 +1,29 @@
-use crate::instance::InstanceNumber;
+use crate::instance::InstanceID;
 use crate::mana::ManaPool;
 use crate::state::State;
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-pub struct PlayerNumber {
-    pub(crate) number: usize,
-}
+pub struct PlayerID(pub(crate) usize);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Player {
     pub health: i32,
     pub floating_mana: ManaPool,
-    pub deck: Vec<InstanceNumber>,
-    pub hand: Vec<InstanceNumber>,
-    pub battlefield: Vec<InstanceNumber>,
-    pub graveyard: Vec<InstanceNumber>,
-    pub exile: Vec<InstanceNumber>,
+    pub deck: Vec<InstanceID>,
+    pub hand: Vec<InstanceID>,
+    pub battlefield: Vec<InstanceID>,
+    pub graveyard: Vec<InstanceID>,
+    pub exile: Vec<InstanceID>,
 }
 
-impl PlayerNumber {
+impl PlayerID {
     pub fn get<'a>(self, state: &'a State) -> &'a Player {
         state.player(self)
     }
 }
 
 impl Player {
-    pub fn new(health: i32, deck: Vec<InstanceNumber>) -> Self {
+    pub fn new(health: i32, deck: Vec<InstanceID>) -> Self {
         Player {
             health,
             floating_mana: ManaPool::default(),

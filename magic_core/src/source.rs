@@ -1,8 +1,8 @@
-use crate::instance::InstanceNumber;
-use crate::player::PlayerNumber;
+use crate::instance::InstanceID;
+use crate::player::PlayerID;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Source {
-    pub controller: PlayerNumber,
-    pub instance: InstanceNumber,
+    pub controller: PlayerID,
+    pub instance: InstanceID,
 }

@@ -1,5 +1,5 @@
 use magic_core::action::{SourcedAction, Target, TargetDescription};
-use magic_core::instance::InstanceNumber;
+use magic_core::instance::InstanceID;
 use magic_core::source::Source;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
@@ -26,7 +26,7 @@ impl UserInterface for GraphicalUserInterface {
         unimplemented!()
     }
 
-    fn read_bool(&mut self, _state: &State, _instance: InstanceNumber) -> bool {
+    fn read_bool(&mut self, _state: &State, _instance: InstanceID) -> bool {
         unimplemented!()
     }
 

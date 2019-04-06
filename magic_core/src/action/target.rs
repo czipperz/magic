@@ -1,8 +1,8 @@
 use crate::action::ActivatedAction;
 use crate::count::Count;
-use crate::instance::InstanceNumber;
-use crate::permanent::PermanentNumber;
-use crate::player::PlayerNumber;
+use crate::instance::InstanceID;
+use crate::permanent::PermanentID;
+use crate::player::PlayerID;
 use crate::state::State;
 use by_address::ByAddress;
 use std::fmt;
@@ -10,38 +10,38 @@ use std::sync::Arc;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Target {
-    Player(Vec<PlayerNumber>),
-    Permanent(Vec<InstanceNumber>),
-    Graveyard(Vec<InstanceNumber>),
-    Spell(Vec<InstanceNumber>),
+    Player(Vec<PlayerID>),
+    Permanent(Vec<InstanceID>),
+    Graveyard(Vec<InstanceID>),
+    Spell(Vec<InstanceID>),
 }
 
 #[derive(Clone, Eq, PartialEq)]
 pub enum TargetDescription {
-    Player(Count, ByAddress<Arc<Fn(&State, PlayerNumber) -> bool>>),
-    Permanent(Count, ByAddress<Arc<Fn(&State, PermanentNumber) -> bool>>),
-    Graveyard(Count, ByAddress<Arc<Fn(&State, InstanceNumber) -> bool>>),
+    Player(Count, ByAddress<Arc<Fn(&State, PlayerID) -> bool>>),
+    Permanent(Count, ByAddress<Arc<Fn(&State, PermanentID) -> bool>>),
+    Graveyard(Count, ByAddress<Arc<Fn(&State, InstanceID) -> bool>>),
     ActivatedAction(Count, ByAddress<Arc<Fn(&State, &ActivatedAction) -> bool>>),
 }
 
 impl TargetDescription {
     pub fn player(
         count: impl Into<Count>,
-        predicate: impl Fn(&State, PlayerNumber) -> bool + 'static,
+        predicate: impl Fn(&State, PlayerID) -> bool + 'static,
     ) -> Self {
         TargetDescription::Player(count.into(), ByAddress(Arc::new(predicate)))
     }
 
     pub fn permanent(
         count: impl Into<Count>,
-        predicate: impl Fn(&State, PermanentNumber) -> bool + 'static,
+        predicate: impl Fn(&State, PermanentID) -> bool + 'static,
     ) -> Self {
         TargetDescription::Permanent(count.into(), ByAddress(Arc::new(predicate)))
     }
 
     pub fn graveyard(
         count: impl Into<Count>,
-        predicate: impl Fn(&State, InstanceNumber) -> bool + 'static,
+        predicate: impl Fn(&State, InstanceID) -> bool + 'static,
     ) -> Self {
         TargetDescription::Graveyard(count.into(), ByAddress(Arc::new(predicate)))
     }

@@ -2,7 +2,7 @@ use super::aura::aura_permanent;
 use magic_core::card::{Card, Subtype, Type};
 use magic_core::effect::Effect;
 use magic_core::mana::ManaCost;
-use magic_core::permanent::{Permanent, PermanentNumber};
+use magic_core::permanent::{Permanent, PermanentID};
 use magic_core::state::State;
 
 pub fn animate_artifact() -> Card {
@@ -15,7 +15,7 @@ pub fn animate_artifact() -> Card {
         .build()
 }
 
-fn is_artifact(state: &State, permanent: PermanentNumber) -> bool {
+fn is_artifact(state: &State, permanent: PermanentID) -> bool {
     permanent.get(state).types.contains(&Type::Artifact)
 }
 

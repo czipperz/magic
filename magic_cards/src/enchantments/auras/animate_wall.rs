@@ -3,7 +3,7 @@ use magic_core::card::{Attribute, Card, Subtype, Type};
 use magic_core::effect::Effect;
 use magic_core::mana::ManaCost;
 use magic_core::permanent::Permanent;
-use magic_core::permanent::PermanentNumber;
+use magic_core::permanent::PermanentID;
 use magic_core::state::State;
 
 pub fn animate_wall() -> Card {
@@ -16,7 +16,7 @@ pub fn animate_wall() -> Card {
         .build()
 }
 
-fn is_wall(state: &State, instance: PermanentNumber) -> bool {
+fn is_wall(state: &State, instance: PermanentID) -> bool {
     instance.get(state).subtypes.contains(&Subtype::Wall)
 }
 

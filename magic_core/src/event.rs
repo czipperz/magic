@@ -1,6 +1,6 @@
 use crate::action::{ActivatedAction, Target};
-use crate::instance::InstanceNumber;
-use crate::player::PlayerNumber;
+use crate::instance::InstanceID;
+use crate::player::PlayerID;
 use crate::source::Source;
 use crate::state::State;
 use crate::turn::{Phase, Step};
@@ -8,18 +8,18 @@ use crate::zone::Zone;
 
 pub enum Event {
     State(Source, StateEvent),
-    Action(PlayerNumber, UserEvent),
-    Turn(PlayerNumber, TurnEvent),
+    Action(PlayerID, UserEvent),
+    Turn(PlayerID, TurnEvent),
 }
 
 pub enum StateEvent {
-    Card(InstanceNumber, CardEvent),
-    Player(PlayerNumber, PlayerEvent),
+    Card(InstanceID, CardEvent),
+    Player(PlayerID, PlayerEvent),
 }
 
 pub enum CardEvent {
     TakeDamage(usize),
-    MoveTo(PlayerNumber, Zone, PlayerNumber, Zone),
+    MoveTo(PlayerID, Zone, PlayerID, Zone),
     AttachTo(Target),
 }
 
@@ -29,7 +29,7 @@ pub enum PlayerEvent {
 }
 
 pub enum UserEvent {
-    PlayLand(InstanceNumber),
+    PlayLand(InstanceID),
     Activate(ActivatedAction),
 }
 
@@ -44,14 +44,14 @@ impl Event {
     pub fn move_to_zone(
         state: &State,
         source: Source,
-        instance_number: InstanceNumber,
+        instance_id: InstanceID,
         zone: Zone,
     ) -> Self {
-        let instance = instance_number.get(state);
+        let instance = instance_id.get(state);
         Event::State(
             source,
             StateEvent::Card(
-                instance_number,
+                instance_id,
                 CardEvent::MoveTo(
                     instance.controller,
                     instance.zone,

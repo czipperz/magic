@@ -8,9 +8,7 @@ use by_address::ByAddress;
 use std::sync::Arc;
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-pub struct CardNumber {
-    pub(crate) number: usize,
-}
+pub struct CardID(pub(crate) usize);
 
 /// A `Card` represents the information written on a physical card.
 ///
@@ -34,7 +32,7 @@ pub struct Card {
     pub toughness: Option<isize>,
 }
 
-impl CardNumber {
+impl CardID {
     pub fn get<'a>(self, state: &'a State) -> &'a Card {
         state.card(self)
     }

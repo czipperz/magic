@@ -5,7 +5,7 @@ use magic_core::action::{
 use magic_core::card::{Card, Subtype, Type};
 use magic_core::effect::Effect;
 use magic_core::event::*;
-use magic_core::instance::InstanceNumber;
+use magic_core::instance::InstanceID;
 use magic_core::mana::ManaCost;
 use magic_core::permanent::Permanent;
 use magic_core::state::State;
@@ -22,14 +22,14 @@ pub fn animate_dead() -> Card {
         .build()
 }
 
-fn is_creature(state: &State, instance: InstanceNumber) -> bool {
+fn is_creature(state: &State, instance: InstanceID) -> bool {
     instance.card(state).types.contains(&Type::Creature)
 }
 
 #[derive(Debug)]
 struct AnimateDeadEnterTheBattlefieldTrigger;
 impl Trigger for AnimateDeadEnterTheBattlefieldTrigger {
-    fn respond(&self, _state: &State, instance: InstanceNumber, event: &Event) -> Option<Action> {
+    fn respond(&self, _state: &State, instance: InstanceID, event: &Event) -> Option<Action> {
         match event {
             Event::State(
                 _,

@@ -1,24 +1,22 @@
-use crate::card::{Card, CardNumber};
-use crate::permanent::{Permanent, PermanentNumber};
-use crate::player::{Player, PlayerNumber};
+use crate::card::{Card, CardID};
+use crate::permanent::{Permanent, PermanentID};
+use crate::player::{Player, PlayerID};
 use crate::state::State;
 use crate::zone::Zone;
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-pub struct InstanceNumber {
-    pub(crate) number: usize,
-}
+pub struct InstanceID(pub(crate) usize);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Instance {
-    pub card: CardNumber,
-    pub permanent: Option<PermanentNumber>,
-    pub owner: PlayerNumber,
-    pub controller: PlayerNumber,
+    pub card: CardID,
+    pub permanent: Option<PermanentID>,
+    pub owner: PlayerID,
+    pub controller: PlayerID,
     pub zone: Zone,
 }
 
-impl InstanceNumber {
+impl InstanceID {
     pub fn get<'a>(self, state: &'a State) -> &'a Instance {
         state.instance(self)
     }

@@ -1,9 +1,9 @@
 use crate::controller::Controller;
 use magic_core::action::*;
 use magic_core::event::{Event, TurnEvent};
-use magic_core::instance::InstanceNumber;
+use magic_core::instance::InstanceID;
 use magic_core::mana::{ManaCost, ManaPayment, ManaPool};
-use magic_core::player::PlayerNumber;
+use magic_core::player::PlayerID;
 use magic_core::source::Source;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
@@ -165,11 +165,11 @@ fn select_payment(
 ) -> Option<Payment> {
     match mandatory_cost {
         Cost::Mana(mana_cost) => select_mana(ui, state, mana_cost),
-        Cost::Sacrifice(number, predicate) => select_sacrifice(
+        Cost::Sacrifice(permanent, predicate) => select_sacrifice(
             ui,
             state,
             source,
-            TargetDescription::Permanent(number, predicate),
+            TargetDescription::Permanent(permanent, predicate),
         ),
     }
 }
@@ -195,7 +195,7 @@ fn select_sacrifice(
 
 fn pay_payments<'a, I: Iterator<Item = &'a Payment>>(
     state: &mut State,
-    player: PlayerNumber,
+    player: PlayerID,
     payments: I,
 ) -> bool {
     if let Some(payments) = unify_payments(payments) {
@@ -215,7 +215,7 @@ fn pay_payments<'a, I: Iterator<Item = &'a Payment>>(
     }
 }
 
-fn pay_mana_payment(state: &mut State, player: PlayerNumber, payment: ManaPayment) -> bool {
+fn pay_mana_payment(state: &mut State, player: PlayerID, payment: ManaPayment) -> bool {
     let ManaPayment {
         pool:
             ManaPool {
@@ -277,7 +277,7 @@ fn pay_mana_payment(state: &mut State, player: PlayerNumber, payment: ManaPaymen
     true
 }
 
-fn pay_sacrifices(_state: &mut State, _player: PlayerNumber, sacrifices: Vec<InstanceNumber>) {
+fn pay_sacrifices(_state: &mut State, _player: PlayerID, sacrifices: Vec<InstanceID>) {
     for _sacrifice in sacrifices {
         unimplemented!()
     }

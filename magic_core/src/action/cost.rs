@@ -1,7 +1,7 @@
 use crate::count::Count;
-use crate::instance::InstanceNumber;
+use crate::instance::InstanceID;
 use crate::mana::{ManaCost, ManaPayment};
-use crate::permanent::PermanentNumber;
+use crate::permanent::PermanentID;
 use crate::state::State;
 use by_address::ByAddress;
 use std::fmt;
@@ -11,14 +11,14 @@ use std::sync::Arc;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Payment {
     Mana(ManaPayment),
-    Sacrifice(Vec<InstanceNumber>),
+    Sacrifice(Vec<InstanceID>),
 }
 
 /// The cost needed to perform an `Action`.
 #[derive(Clone, Eq, PartialEq)]
 pub enum Cost {
     Mana(ManaCost),
-    Sacrifice(Count, ByAddress<Arc<Fn(&State, PermanentNumber) -> bool>>),
+    Sacrifice(Count, ByAddress<Arc<Fn(&State, PermanentID) -> bool>>),
 }
 
 impl fmt::Debug for Cost {

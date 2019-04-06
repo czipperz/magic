@@ -1,6 +1,6 @@
 use crate::action::{Action, Target, Trigger};
 use crate::card::{Attribute, Subtype, Type};
-use crate::instance::{Instance, InstanceNumber};
+use crate::instance::{Instance, InstanceID};
 use crate::mana::Color;
 use crate::replacement_effect::ReplacementEffect;
 use crate::state::State;
@@ -8,14 +8,12 @@ use by_address::ByAddress;
 use std::sync::Arc;
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-pub struct PermanentNumber {
-    pub(crate) number: usize,
-}
+pub struct PermanentID(pub(crate) usize);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Permanent {
-    pub instance: InstanceNumber,
-    pub effects: Vec<InstanceNumber>,
+    pub instance: InstanceID,
+    pub effects: Vec<InstanceID>,
     pub affecting: Option<Target>,
     pub tapped: bool,
 
@@ -33,7 +31,7 @@ pub struct Permanent {
     pub ignored_attributes: Vec<Attribute>,
 }
 
-impl PermanentNumber {
+impl PermanentID {
     pub fn get<'a>(self, state: &'a State) -> &'a Permanent {
         state.permanent(self)
     }

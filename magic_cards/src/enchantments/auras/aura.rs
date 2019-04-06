@@ -2,13 +2,13 @@ use crate::cast::put_on_battlefield;
 use magic_core::action::*;
 use magic_core::card::CardBuilder;
 use magic_core::event::*;
-use magic_core::instance::InstanceNumber;
-use magic_core::permanent::PermanentNumber;
+use magic_core::instance::InstanceID;
+use magic_core::permanent::PermanentID;
 use magic_core::state::State;
 use magic_core::zone::Zone;
 
 pub fn aura_permanent(
-    predicate: impl Fn(&State, PermanentNumber) -> bool + 'static,
+    predicate: impl Fn(&State, PermanentID) -> bool + 'static,
 ) -> CardBuilder {
     aura(TargetDescription::permanent(1, predicate))
 }
@@ -45,7 +45,7 @@ struct EnterTheBattlefieldAttachIfNot {
     target: TargetDescription,
 }
 impl Trigger for EnterTheBattlefieldAttachIfNot {
-    fn respond(&self, state: &State, instance: InstanceNumber, event: &Event) -> Option<Action> {
+    fn respond(&self, state: &State, instance: InstanceID, event: &Event) -> Option<Action> {
         match event {
             Event::State(
                 _,
