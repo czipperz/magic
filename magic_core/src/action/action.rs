@@ -2,6 +2,7 @@ use super::{Cost, Payment, Target, TargetDescription};
 use crate::event::Event;
 use crate::source::Source;
 use crate::state::State;
+use crate::ui::UserInterface;
 use by_address::ByAddress;
 use std::fmt::Debug;
 use std::sync::Arc;
@@ -43,7 +44,8 @@ pub struct SourcedAction {
 }
 
 pub trait ActionResolver: Debug {
-    fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event>;
+    fn resolve(&self, state: &State, ui: &mut UserInterface, action: ActivatedAction)
+        -> Vec<Event>;
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

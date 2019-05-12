@@ -153,7 +153,7 @@ fn resolve(
     resolver: &ActionResolver,
     activated: ActivatedAction,
 ) -> Vec<Event> {
-    let events = resolver.resolve(state, activated);
+    let events = resolver.resolve(state, ui, activated);
     state.replacement_effects(ui, events)
 }
 

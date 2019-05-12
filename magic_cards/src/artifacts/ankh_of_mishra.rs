@@ -6,6 +6,7 @@ use magic_core::instance::InstanceID;
 use magic_core::mana::ManaCost;
 use magic_core::player::PlayerID;
 use magic_core::state::State;
+use magic_core::ui::UserInterface;
 use magic_core::zone::Zone;
 
 pub fn ankh_of_mishra() -> Card {
@@ -43,7 +44,7 @@ struct AnkhOfMishraAction {
     controller: PlayerID,
 }
 impl ActionResolver for AnkhOfMishraAction {
-    fn resolve(&self, _: &State, action: ActivatedAction) -> Vec<Event> {
+    fn resolve(&self, _: &State, _: &mut UserInterface, action: ActivatedAction) -> Vec<Event> {
         vec![Event::State(
             action.source,
             StateEvent::Player(self.controller, PlayerEvent::TakeDamage(2)),

@@ -61,7 +61,7 @@ impl State {
                 {
                     if !history.contains(&(*instance, index)) {
                         if let Some(replacement) =
-                            replacement_effect.replace(&self, *instance, &event)
+                            replacement_effect.replace(&self, ui, *instance, &event)
                         {
                             replacements.push((instance, index, replacement));
                         }

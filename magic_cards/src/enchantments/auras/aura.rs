@@ -5,11 +5,10 @@ use magic_core::event::*;
 use magic_core::instance::InstanceID;
 use magic_core::permanent::PermanentID;
 use magic_core::state::State;
+use magic_core::ui::UserInterface;
 use magic_core::zone::Zone;
 
-pub fn aura_permanent(
-    predicate: impl Fn(&State, PermanentID) -> bool + 'static,
-) -> CardBuilder {
+pub fn aura_permanent(predicate: impl Fn(&State, PermanentID) -> bool + 'static) -> CardBuilder {
     aura(TargetDescription::permanent(1, predicate))
 }
 
@@ -32,7 +31,7 @@ fn attach(action: ActivatedAction) -> Event {
 #[derive(Debug)]
 struct CastAura;
 impl ActionResolver for CastAura {
-    fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event> {
+    fn resolve(&self, state: &State, _: &mut UserInterface, action: ActivatedAction) -> Vec<Event> {
         vec![
             put_on_battlefield(state, action.source.clone()),
             attach(action),
@@ -47,10 +46,9 @@ struct EnterTheBattlefieldAttachIfNot {
 impl Trigger for EnterTheBattlefieldAttachIfNot {
     fn respond(&self, state: &State, instance: InstanceID, event: &Event) -> Option<Action> {
         match event {
-            Event::State(
-                _,
-                StateEvent::Card(card, CardEvent::MoveTo(_, Zone::Battlefield)),
-            ) if *card == instance => {
+            Event::State(_, StateEvent::Card(card, CardEvent::MoveTo(_, Zone::Battlefield)))
+                if *card == instance =>
+            {
                 if let Some(permanent) = card.permanent(state) {
                     if permanent.affecting.is_none() {
                         return Some(Action::from(AttachAura).with_target(self.target.clone()));
@@ -66,7 +64,12 @@ impl Trigger for EnterTheBattlefieldAttachIfNot {
 #[derive(Debug)]
 struct AttachAura;
 impl ActionResolver for AttachAura {
-    fn resolve(&self, _state: &State, action: ActivatedAction) -> Vec<Event> {
+    fn resolve(
+        &self,
+        _state: &State,
+        _: &mut UserInterface,
+        action: ActivatedAction,
+    ) -> Vec<Event> {
         vec![attach(action)]
     }
 }

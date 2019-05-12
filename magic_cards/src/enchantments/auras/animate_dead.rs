@@ -9,6 +9,7 @@ use magic_core::instance::InstanceID;
 use magic_core::mana::ManaCost;
 use magic_core::permanent::Permanent;
 use magic_core::state::State;
+use magic_core::ui::UserInterface;
 use magic_core::zone::Zone;
 
 pub fn animate_dead() -> Card {
@@ -44,7 +45,7 @@ impl Trigger for AnimateDeadEnterTheBattlefieldTrigger {
 #[derive(Debug)]
 struct AnimateDeadEnterTheBattlefieldAction;
 impl ActionResolver for AnimateDeadEnterTheBattlefieldAction {
-    fn resolve(&self, state: &State, action: ActivatedAction) -> Vec<Event> {
+    fn resolve(&self, state: &State, _: &mut UserInterface, action: ActivatedAction) -> Vec<Event> {
         let aura_instance = action.source.instance;
         let aura = aura_instance.permanent(state).unwrap();
         match &aura.affecting {
