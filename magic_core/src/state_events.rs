@@ -154,7 +154,7 @@ mod tests {
         let player = state.player_mut(player_id);
         let instance = player.deck.pop().unwrap();
         player.battlefield.push(instance);
-        state.add_permanent(instance);
+        state.add_permanent_from(instance);
         let event = Event::Turn(player_id, TurnEvent::BeginPhase(Phase::Beginning));
 
         let actions = state.trigger(&event);
@@ -179,7 +179,7 @@ mod tests {
             let player = state.player_mut(player_id);
             let instance = player.deck.pop().unwrap();
             player.battlefield.push(instance);
-            state.add_permanent(instance);
+            state.add_permanent_from(instance);
         }
 
         let event = Event::Turn(
@@ -222,7 +222,7 @@ mod tests {
             let player = state.player_mut(player_id);
             let instance = player.deck.remove(*index);
             player.battlefield.push(instance);
-            state.add_permanent(instance);
+            state.add_permanent_from(instance);
         }
 
         let event = Event::Turn(

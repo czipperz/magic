@@ -40,25 +40,25 @@ impl State {
         state
     }
 
-    pub fn add_permanent(&mut self, instance_id: InstanceID) -> PermanentID {
+    pub fn add_permanent_from(&mut self, instance_id: InstanceID) -> PermanentID {
+        self.add_permanent(Permanent::new(instance_id, instance_id.card(self)))
+    }
+
+    pub fn add_permanent(&mut self, permanent: Permanent) -> PermanentID {
         let permanent_id = PermanentID(self.permanents.len());
 
         {
-            let instance = self.instance_mut(instance_id);
+            let instance = self.instance_mut(permanent.instance);
             assert_eq!(instance.permanent, None);
             instance.permanent = Some(permanent_id);
         }
 
-        let instance = self.instance(instance_id);
-        let card = self.card(instance.card);
-        let permanent = Permanent::new(instance_id, card);
         self.permanents.push(permanent);
         permanent_id
     }
 
-    pub fn add_instance(&mut self, card: CardID, owner: PlayerID, zone: Zone) -> InstanceID {
+    pub fn add_instance(&mut self, instance: Instance) -> InstanceID {
         let instance_id = InstanceID(self.instances.len());
-        let instance = Instance::new(card, owner, zone);
         self.instances.push(instance);
         instance_id
     }
