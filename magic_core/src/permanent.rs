@@ -1,5 +1,5 @@
 use crate::action::{Action, Target, Trigger};
-use crate::card::{Attribute, Subtype, Type};
+use crate::card::{Attribute, Card, Subtype, Type};
 use crate::instance::{Instance, InstanceID};
 use crate::mana::Color;
 use crate::replacement_effect::ReplacementEffect;
@@ -42,6 +42,28 @@ impl PermanentID {
 }
 
 impl Permanent {
+    pub fn new(instance_id: InstanceID, card: &Card) -> Self {
+        Permanent {
+            instance: instance_id,
+            effects: Vec::new(),
+            affecting: None,
+            tapped: false,
+
+            colors: card.colors.clone(),
+            types: card.types.clone(),
+            subtypes: card.subtypes.clone(),
+            attributes: card.attributes.clone(),
+            abilities: card.abilities.clone(),
+            triggers: card.triggers.clone(),
+            replacement_effects: card.replacement_effects.clone(),
+            color_words: card.color_words.clone(),
+            power: card.power.clone(),
+            toughness: card.toughness.clone(),
+
+            ignored_attributes: Vec::new(),
+        }
+    }
+
     pub fn instance<'a>(&self, state: &'a State) -> &'a Instance {
         self.instance.get(state)
     }

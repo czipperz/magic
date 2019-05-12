@@ -39,6 +39,16 @@ impl InstanceID {
 }
 
 impl Instance {
+    pub fn new(card: CardID, owner: PlayerID, zone: Zone) -> Self {
+        Instance {
+            card,
+            permanent: None,
+            owner,
+            controller: owner,
+            zone,
+        }
+    }
+
     pub fn card<'a>(&self, state: &'a State) -> &'a Card {
         self.card.get(state)
     }

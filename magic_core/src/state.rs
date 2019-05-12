@@ -29,13 +29,9 @@ impl State {
             for card in deck {
                 let owner = PlayerID(state.players.len());
                 state.cards.push(card);
-                state.instances.push(Instance {
-                    card: CardID(id),
-                    permanent: None,
-                    owner,
-                    controller: owner,
-                    zone: Zone::Deck,
-                });
+                state
+                    .instances
+                    .push(Instance::new(CardID(id), owner, Zone::Deck));
                 player_instances.push(InstanceID(id));
                 id += 1;
             }
@@ -55,43 +51,14 @@ impl State {
 
         let instance = self.instance(instance_id);
         let card = self.card(instance.card);
-        let permanent = Permanent {
-            instance: instance_id,
-            effects: Vec::new(),
-            affecting: None,
-            tapped: false,
-
-            colors: card.colors.clone(),
-            types: card.types.clone(),
-            subtypes: card.subtypes.clone(),
-            attributes: card.attributes.clone(),
-            abilities: card.abilities.clone(),
-            triggers: card.triggers.clone(),
-            replacement_effects: card.replacement_effects.clone(),
-            color_words: card.color_words.clone(),
-            power: card.power.clone(),
-            toughness: card.toughness.clone(),
-
-            ignored_attributes: Vec::new(),
-        };
+        let permanent = Permanent::new(instance_id, card);
         self.permanents.push(permanent);
         permanent_id
     }
 
-    pub fn add_instance(
-        &mut self,
-        card: CardID,
-        owner: PlayerID,
-        zone: Zone,
-    ) -> InstanceID {
+    pub fn add_instance(&mut self, card: CardID, owner: PlayerID, zone: Zone) -> InstanceID {
         let instance_id = InstanceID(self.instances.len());
-        let instance = Instance {
-            card,
-            permanent: None,
-            owner,
-            controller: owner,
-            zone,
-        };
+        let instance = Instance::new(card, owner, zone);
         self.instances.push(instance);
         instance_id
     }
@@ -101,9 +68,7 @@ impl State {
     }
 
     pub fn players(&self) -> Vec<PlayerID> {
-        (0..self.players.len())
-            .map(PlayerID)
-            .collect()
+        (0..self.players.len()).map(PlayerID).collect()
     }
 
     pub fn player(&self, player: PlayerID) -> &Player {
@@ -155,9 +120,6 @@ mod tests {
     #[test]
     fn test_player_in_bounds() {
         let state = State::new(20, vec![vec![]]);
-        assert_eq!(
-            *state.player(PlayerID(0)),
-            Player::new(20, vec![])
-        );
+        assert_eq!(*state.player(PlayerID(0)), Player::new(20, vec![]));
     }
 }
