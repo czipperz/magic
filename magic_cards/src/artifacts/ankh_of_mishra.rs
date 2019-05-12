@@ -25,10 +25,12 @@ impl Trigger for AnkhOfMishraTrigger {
         match event {
             Event::State(
                 _,
-                StateEvent::Card(card, CardEvent::MoveTo(_, old_zone, _, Zone::Battlefield)),
-            ) if *old_zone != Zone::Battlefield && card.card(state).types.contains(&Type::Land) => {
+                StateEvent::Card(instance, CardEvent::MoveTo(_, Zone::Battlefield)),
+            ) if instance.get(state).zone != Zone::Battlefield
+                && instance.card(state).types.contains(&Type::Land) =>
+            {
                 Some(Action::from(AnkhOfMishraAction {
-                    controller: card.get(state).controller,
+                    controller: instance.get(state).controller,
                 }))
             }
             _ => None,

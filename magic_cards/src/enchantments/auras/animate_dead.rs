@@ -31,10 +31,11 @@ struct AnimateDeadEnterTheBattlefieldTrigger;
 impl Trigger for AnimateDeadEnterTheBattlefieldTrigger {
     fn respond(&self, _state: &State, instance: InstanceID, event: &Event) -> Option<Action> {
         match event {
-            Event::State(
-                _,
-                StateEvent::Card(card, CardEvent::MoveTo(_, _, _, Zone::Battlefield)),
-            ) if *card == instance => Some(Action::from(AnimateDeadEnterTheBattlefieldAction)),
+            Event::State(_, StateEvent::Card(card, CardEvent::MoveTo(_, Zone::Battlefield)))
+                if *card == instance =>
+            {
+                Some(Action::from(AnimateDeadEnterTheBattlefieldAction))
+            }
             _ => None,
         }
     }

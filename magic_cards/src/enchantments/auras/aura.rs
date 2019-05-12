@@ -49,7 +49,7 @@ impl Trigger for EnterTheBattlefieldAttachIfNot {
         match event {
             Event::State(
                 _,
-                StateEvent::Card(card, CardEvent::MoveTo(_, _, _, Zone::Battlefield)),
+                StateEvent::Card(card, CardEvent::MoveTo(_, Zone::Battlefield)),
             ) if *card == instance => {
                 if let Some(permanent) = card.permanent(state) {
                     if permanent.affecting.is_none() {

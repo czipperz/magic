@@ -19,7 +19,7 @@ pub enum StateEvent {
 
 pub enum CardEvent {
     TakeDamage(usize),
-    MoveTo(PlayerID, Zone, PlayerID, Zone),
+    MoveTo(PlayerID, Zone),
     AttachTo(Target),
 }
 
@@ -41,6 +41,13 @@ pub enum TurnEvent {
 }
 
 impl Event {
+    pub fn move_to(source: Source, instance_id: InstanceID, player: PlayerID, zone: Zone) -> Self {
+        Event::State(
+            source,
+            StateEvent::Card(instance_id, CardEvent::MoveTo(player, zone)),
+        )
+    }
+
     pub fn move_to_zone(
         state: &State,
         source: Source,
@@ -48,17 +55,6 @@ impl Event {
         zone: Zone,
     ) -> Self {
         let instance = instance_id.get(state);
-        Event::State(
-            source,
-            StateEvent::Card(
-                instance_id,
-                CardEvent::MoveTo(
-                    instance.controller,
-                    instance.zone,
-                    instance.controller,
-                    zone,
-                ),
-            ),
-        )
+        Self::move_to(source, instance_id, instance.controller, zone)
     }
 }
