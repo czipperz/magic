@@ -20,6 +20,7 @@ use std::ops::{RangeFrom, RangeInclusive};
 impl From<RangeInclusive<usize>> for Count {
     fn from(range: RangeInclusive<usize>) -> Count {
         let (start, end) = range.into_inner();
+        assert!(end >= start);
         Count {
             minimum: start,
             maximum: Some(end),
@@ -54,12 +55,18 @@ mod tests {
     #[test]
     fn test_range_inclusive() {
         assert_eq!(
-            Count::from(0..=1),
+            Count::from(1..=1),
             Count {
-                minimum: 0,
+                minimum: 1,
                 maximum: Some(1),
             }
         );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_range_inclusive_panics_if_maximum_less_than_minimum() {
+        Count::from(1..=0);
     }
 
     #[test]
