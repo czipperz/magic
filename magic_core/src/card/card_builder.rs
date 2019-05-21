@@ -21,7 +21,8 @@ pub struct CardBuilder {
     keyword_abilities: Vec<KeywordAbility>,
     triggers: Vec<ByAddress<Arc<Trigger>>>,
     replacement_effects: Vec<ByAddress<Arc<ReplacementEffect>>>,
-    default_effects: Vec<ByAddress<Arc<Effect>>>,
+    self_effects: Vec<ByAddress<Arc<Effect>>>,
+    global_effects: Vec<ByAddress<Arc<Effect>>>,
     color_words: Vec<Color>,
 
     power: Option<isize>,
@@ -44,7 +45,8 @@ impl CardBuilder {
             keyword_abilities: Vec::new(),
             triggers: Vec::new(),
             replacement_effects: Vec::new(),
-            default_effects: Vec::new(),
+            self_effects: Vec::new(),
+            global_effects: Vec::new(),
             color_words: Vec::new(),
 
             power: None,
@@ -70,7 +72,8 @@ impl CardBuilder {
             keyword_abilities: self.keyword_abilities,
             triggers: self.triggers,
             replacement_effects: self.replacement_effects,
-            default_effects: self.default_effects,
+            self_effects: self.self_effects,
+            global_effects: self.global_effects,
             color_words: self.color_words,
 
             power: self.power,
@@ -153,8 +156,13 @@ impl CardBuilder {
         self
     }
 
-    pub fn with_effect(mut self, effect: impl Effect + 'static) -> Self {
-        self.default_effects.push(ByAddress(Arc::new(effect)));
+    pub fn with_self_effect(mut self, effect: impl Effect + 'static) -> Self {
+        self.self_effects.push(ByAddress(Arc::new(effect)));
+        self
+    }
+
+    pub fn with_global_effect(mut self, effect: impl Effect + 'static) -> Self {
+        self.global_effects.push(ByAddress(Arc::new(effect)));
         self
     }
 

@@ -25,7 +25,8 @@ pub struct Card {
     pub keyword_abilities: Vec<KeywordAbility>,
     pub triggers: Vec<ByAddress<Arc<Trigger>>>,
     pub replacement_effects: Vec<ByAddress<Arc<ReplacementEffect>>>,
-    pub default_effects: Vec<ByAddress<Arc<Effect>>>,
+    pub self_effects: Vec<ByAddress<Arc<Effect>>>,
+    pub global_effects: Vec<ByAddress<Arc<Effect>>>,
     pub color_words: Vec<Color>,
 
     pub power: Option<isize>,
