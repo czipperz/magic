@@ -94,6 +94,10 @@ impl State {
     pub(crate) fn permanent(&self, permanent: PermanentID) -> &Permanent {
         &self.permanents[permanent.0]
     }
+
+    pub fn permanents(&self) -> impl Iterator<Item = PermanentID> {
+        (0..self.permanents.len()).map(PermanentID)
+    }
 }
 
 #[cfg(test)]

@@ -23,6 +23,7 @@ pub enum CardEvent {
     TakeDamage(usize),
     MoveTo(PlayerID, Zone),
     AttachTo(Target, Arc<Effect>),
+    Destroy,
 }
 
 pub enum PlayerEvent {

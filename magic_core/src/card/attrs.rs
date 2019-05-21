@@ -5,6 +5,7 @@ pub enum Type {
     Enchantment,
     Instant,
     Land,
+    Sorcery,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
