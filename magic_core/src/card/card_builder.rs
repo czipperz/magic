@@ -1,7 +1,7 @@
 use super::{Attribute, Subtype, Type};
 use crate::action::{Action, ActionResolver, Cost, TargetDescription, Trigger};
 use crate::card::Card;
-use crate::effect::{DoNothingEffect, Effect};
+use crate::effect::Effect;
 use crate::mana::{Color, ManaCost};
 use crate::replacement_effect::ReplacementEffect;
 use by_address::ByAddress;
@@ -21,7 +21,7 @@ pub struct CardBuilder {
     abilities: Vec<Action>,
     triggers: Vec<ByAddress<Arc<Trigger>>>,
     replacement_effects: Vec<ByAddress<Arc<ReplacementEffect>>>,
-    effect: Option<ByAddress<Arc<Effect>>>,
+    default_effects: Vec<ByAddress<Arc<Effect>>>,
     color_words: Vec<Color>,
 
     power: Option<isize>,
@@ -44,7 +44,7 @@ impl CardBuilder {
             abilities: Vec::new(),
             triggers: Vec::new(),
             replacement_effects: Vec::new(),
-            effect: None,
+            default_effects: Vec::new(),
             color_words: Vec::new(),
 
             power: None,
@@ -70,7 +70,7 @@ impl CardBuilder {
             abilities: self.abilities,
             triggers: self.triggers,
             replacement_effects: self.replacement_effects,
-            effect: self.effect.unwrap_or(ByAddress(Arc::new(DoNothingEffect))),
+            default_effects: self.default_effects,
             color_words: self.color_words,
 
             power: self.power,
@@ -154,7 +154,7 @@ impl CardBuilder {
     }
 
     pub fn with_effect(mut self, effect: impl Effect + 'static) -> Self {
-        self.effect = Some(ByAddress(Arc::new(effect)));
+        self.default_effects.push(ByAddress(Arc::new(effect)));
         self
     }
 

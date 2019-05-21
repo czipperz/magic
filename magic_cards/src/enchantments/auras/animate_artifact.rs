@@ -6,12 +6,11 @@ use magic_core::permanent::{Permanent, PermanentID};
 use magic_core::state::State;
 
 pub fn animate_artifact() -> Card {
-    aura_permanent(is_artifact)
+    aura_permanent(is_artifact, AnimateArtifactEffect)
         .with_name("Animate Artifact")
         .with_mana_cost(ManaCost::new().with_blue(1).with_generic(3))
         .with_type(Type::Enchantment)
         .with_subtype(Subtype::Aura)
-        .with_effect(AnimateArtifactEffect)
         .build()
 }
 

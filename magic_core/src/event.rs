@@ -1,10 +1,12 @@
 use crate::action::{ActivatedAction, Target};
+use crate::effect::Effect;
 use crate::instance::InstanceID;
 use crate::player::PlayerID;
 use crate::source::Source;
 use crate::state::State;
 use crate::turn::{Phase, Step};
 use crate::zone::Zone;
+use std::sync::Arc;
 
 pub enum Event {
     State(Source, StateEvent),
@@ -20,7 +22,7 @@ pub enum StateEvent {
 pub enum CardEvent {
     TakeDamage(usize),
     MoveTo(PlayerID, Zone),
-    AttachTo(Target),
+    AttachTo(Target, Arc<Effect>),
 }
 
 pub enum PlayerEvent {
@@ -56,5 +58,11 @@ impl Event {
     ) -> Self {
         let instance = instance_id.get(state);
         Self::move_to(source, instance_id, instance.controller, zone)
+    }
+}
+
+impl CardEvent {
+    pub fn attach_to(target: Target, effect: impl Effect + 'static) -> Self {
+        CardEvent::AttachTo(target, Arc::new(effect))
     }
 }

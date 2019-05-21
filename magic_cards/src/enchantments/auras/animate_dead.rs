@@ -13,14 +13,16 @@ use magic_core::ui::UserInterface;
 use magic_core::zone::Zone;
 
 pub fn animate_dead() -> Card {
-    aura(TargetDescription::graveyard(1, is_creature))
-        .with_name("Animate Dead")
-        .with_mana_cost(ManaCost::new().with_black(1).with_generic(1))
-        .with_type(Type::Enchantment)
-        .with_subtype(Subtype::Aura)
-        .with_trigger(AnimateDeadEnterTheBattlefieldTrigger)
-        .with_effect(AnimateDeadEffect)
-        .build()
+    aura(
+        TargetDescription::graveyard(1, is_creature),
+        AnimateDeadEffect,
+    )
+    .with_name("Animate Dead")
+    .with_mana_cost(ManaCost::new().with_black(1).with_generic(1))
+    .with_type(Type::Enchantment)
+    .with_subtype(Subtype::Aura)
+    .with_trigger(AnimateDeadEnterTheBattlefieldTrigger)
+    .build()
 }
 
 fn is_creature(state: &State, instance: InstanceID) -> bool {
@@ -48,7 +50,7 @@ impl ActionResolver for AnimateDeadEnterTheBattlefieldAction {
     fn resolve(&self, state: &State, _: &mut UserInterface, action: ActivatedAction) -> Vec<Event> {
         let aura_instance = action.source.instance;
         let aura = aura_instance.permanent(state).unwrap();
-        match &aura.affecting {
+        match &aura.attached_to {
             Some(Target::Graveyard(creatures)) => {
                 assert_eq!(creatures.len(), 1);
                 let creature = creatures[0];
@@ -58,7 +60,10 @@ impl ActionResolver for AnimateDeadEnterTheBattlefieldAction {
                         action.source,
                         StateEvent::Card(
                             aura_instance,
-                            CardEvent::AttachTo(Target::Permanent(vec![creature])),
+                            CardEvent::attach_to(
+                                Target::Permanent(vec![creature]),
+                                AnimateDeadEffect,
+                            ),
                         ),
                     ),
                 ]

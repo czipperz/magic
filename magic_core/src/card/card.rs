@@ -25,7 +25,7 @@ pub struct Card {
     pub abilities: Vec<Action>,
     pub triggers: Vec<ByAddress<Arc<Trigger>>>,
     pub replacement_effects: Vec<ByAddress<Arc<ReplacementEffect>>>,
-    pub effect: ByAddress<Arc<Effect>>,
+    pub default_effects: Vec<ByAddress<Arc<Effect>>>,
     pub color_words: Vec<Color>,
 
     pub power: Option<isize>,
