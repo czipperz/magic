@@ -1,5 +1,5 @@
 use crate::cast::CastPermanent;
-use magic_core::card::{Attribute, Card, CardBuilder, Subtype, Type};
+use magic_core::card::{Card, CardBuilder, KeywordAbility, Subtype, Type};
 use magic_core::mana::ManaCost;
 
 pub fn air_elemental() -> Card {
@@ -11,6 +11,6 @@ pub fn air_elemental() -> Card {
         .with_subtype(Subtype::Elemental)
         .with_power(4)
         .with_toughness(4)
-        .with_attribute(Attribute::Flying)
+        .with_keyword_ability(KeywordAbility::Flying)
         .build()
 }

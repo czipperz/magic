@@ -1,5 +1,5 @@
 use crate::action::{Action, Target, Trigger};
-use crate::card::{Attribute, Card, Subtype, Type};
+use crate::card::{Card, KeywordAbility, Subtype, Type};
 use crate::instance::{Instance, InstanceID};
 use crate::mana::Color;
 use crate::permission::Permissions;
@@ -22,9 +22,9 @@ pub struct Permanent {
     pub colors: Vec<Color>,
     pub types: Vec<Type>,
     pub subtypes: Vec<Subtype>,
-    pub attributes: Vec<Attribute>,
 
     pub abilities: Vec<Action>,
+    pub keyword_abilities: Vec<KeywordAbility>,
     pub triggers: Vec<ByAddress<Arc<Trigger>>>,
     pub replacement_effects: Vec<ByAddress<Arc<ReplacementEffect>>>,
     pub color_words: Vec<Color>,
@@ -55,9 +55,9 @@ impl Permanent {
             colors: card.colors.clone(),
             types: card.types.clone(),
             subtypes: card.subtypes.clone(),
-            attributes: card.attributes.clone(),
 
             abilities: card.abilities.clone(),
+            keyword_abilities: card.keyword_abilities.clone(),
             triggers: card.triggers.clone(),
             replacement_effects: card.replacement_effects.clone(),
             color_words: card.color_words.clone(),

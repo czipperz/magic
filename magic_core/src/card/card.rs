@@ -1,4 +1,4 @@
-use super::{Attribute, Subtype, Type};
+use super::{KeywordAbility, Subtype, Type};
 use crate::action::{Action, Cost, Trigger};
 use crate::effect::Effect;
 use crate::mana::{Color, ManaCost};
@@ -20,9 +20,9 @@ pub struct Card {
     pub colors: Vec<Color>,
     pub types: Vec<Type>,
     pub subtypes: Vec<Subtype>,
-    pub attributes: Vec<Attribute>,
 
     pub abilities: Vec<Action>,
+    pub keyword_abilities: Vec<KeywordAbility>,
     pub triggers: Vec<ByAddress<Arc<Trigger>>>,
     pub replacement_effects: Vec<ByAddress<Arc<ReplacementEffect>>>,
     pub default_effects: Vec<ByAddress<Arc<Effect>>>,

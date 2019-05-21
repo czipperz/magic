@@ -1,4 +1,4 @@
-use super::{Attribute, Subtype, Type};
+use super::{KeywordAbility, Subtype, Type};
 use crate::action::{Action, ActionResolver, Cost, TargetDescription, Trigger};
 use crate::card::Card;
 use crate::effect::Effect;
@@ -16,9 +16,9 @@ pub struct CardBuilder {
     colors: Option<Vec<Color>>,
     types: Vec<Type>,
     subtypes: Vec<Subtype>,
-    attributes: Vec<Attribute>,
 
     abilities: Vec<Action>,
+    keyword_abilities: Vec<KeywordAbility>,
     triggers: Vec<ByAddress<Arc<Trigger>>>,
     replacement_effects: Vec<ByAddress<Arc<ReplacementEffect>>>,
     default_effects: Vec<ByAddress<Arc<Effect>>>,
@@ -39,9 +39,9 @@ impl CardBuilder {
             colors: None,
             types: Vec::new(),
             subtypes: Vec::new(),
-            attributes: Vec::new(),
 
             abilities: Vec::new(),
+            keyword_abilities: Vec::new(),
             triggers: Vec::new(),
             replacement_effects: Vec::new(),
             default_effects: Vec::new(),
@@ -65,9 +65,9 @@ impl CardBuilder {
             colors: self.colors.unwrap(),
             types: self.types,
             subtypes: self.subtypes,
-            attributes: self.attributes,
 
             abilities: self.abilities,
+            keyword_abilities: self.keyword_abilities,
             triggers: self.triggers,
             replacement_effects: self.replacement_effects,
             default_effects: self.default_effects,
@@ -129,13 +129,13 @@ impl CardBuilder {
         self
     }
 
-    pub fn with_attribute(mut self, attribute: Attribute) -> Self {
-        self.attributes.push(attribute);
+    pub fn with_ability(mut self, ability: Action) -> Self {
+        self.abilities.push(ability);
         self
     }
 
-    pub fn with_ability(mut self, ability: Action) -> Self {
-        self.abilities.push(ability);
+    pub fn with_keyword_ability(mut self, keyword_ability: KeywordAbility) -> Self {
+        self.keyword_abilities.push(keyword_ability);
         self
     }
 
