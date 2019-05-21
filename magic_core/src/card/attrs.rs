@@ -12,6 +12,7 @@ pub enum Type {
 pub enum Subtype {
     Aura,
     Elemental,
+    Forest,
     Wall,
 }
 
