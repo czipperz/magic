@@ -12,7 +12,7 @@ pub struct ManaPool {
 }
 
 impl ManaPool {
-    pub fn new(&self) -> Self {
+    pub fn new() -> Self {
         Self::default()
     }
 
@@ -38,6 +38,31 @@ impl ManaPool {
             colors.push(Color::Black);
         }
         colors
+    }
+
+    pub fn with_blue(mut self, blue: usize) -> Self {
+        self.blue = blue;
+        self
+    }
+    pub fn with_white(mut self, white: usize) -> Self {
+        self.white = white;
+        self
+    }
+    pub fn with_green(mut self, green: usize) -> Self {
+        self.green = green;
+        self
+    }
+    pub fn with_red(mut self, red: usize) -> Self {
+        self.red = red;
+        self
+    }
+    pub fn with_black(mut self, black: usize) -> Self {
+        self.black = black;
+        self
+    }
+    pub fn with_colorless(mut self, colorless: usize) -> Self {
+        self.colorless = colorless;
+        self
     }
 }
 
