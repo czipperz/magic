@@ -34,6 +34,9 @@ impl Effect for AnimateArtifactEffect {
 #[cfg(test)]
 mod test {
     use super::*;
+    use magic_core::card::CardBuilder;
+    use magic_core::instance::Instance;
+    use magic_core::zone::Zone;
 
     #[test]
     fn test_constructor() {
@@ -45,5 +48,49 @@ mod test {
         );
         assert_eq!(card.types, &[Type::Enchantment]);
         assert_eq!(card.subtypes, &[Subtype::Aura]);
+    }
+
+    fn base_card() -> CardBuilder {
+        CardBuilder::new()
+            .with_name("")
+            .with_mana_cost(ManaCost::new().with_generic(4))
+            .on_resolve(crate::cast::CastPermanent)
+    }
+
+    fn affect(card: &mut Card) {
+        let mut state = State::new(0, vec![vec![card.clone()]]);
+        let instance = state.add_instance(Instance::new(
+            card.clone(),
+            state.players()[0],
+            Zone::Battlefield,
+        ));
+
+        AnimateArtifactEffect.affect(&state, instance, card);
+    }
+
+    #[test]
+    fn test_effect_add_creature() {
+        let mut card = base_card().build();
+
+        affect(&mut card);
+
+        assert_eq!(card.types, vec![Type::Creature]);
+        assert_eq!(card.power, Some(4));
+        assert_eq!(card.toughness, Some(4));
+    }
+
+    #[test]
+    fn test_effect_already_creature() {
+        let mut card = base_card()
+            .with_type(Type::Creature)
+            .with_power(1)
+            .with_toughness(2)
+            .build();
+
+        affect(&mut card);
+
+        assert_eq!(card.types, vec![Type::Creature]);
+        assert_eq!(card.power, Some(1));
+        assert_eq!(card.toughness, Some(2));
     }
 }
