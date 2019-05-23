@@ -142,6 +142,9 @@ impl CardBuilder {
     }
 
     pub fn with_keyword_ability(mut self, keyword_ability: KeywordAbility) -> Self {
+        if let KeywordAbility::Defender = keyword_ability {
+            self.permissions.remove(&Permission::Attack);
+        }
         self.keyword_abilities.push(keyword_ability);
         self
     }

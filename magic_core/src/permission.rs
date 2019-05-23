@@ -4,7 +4,7 @@ pub enum Permission {
     Block,
 }
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Permissions {
     permissions: Vec<Permission>,
 }
@@ -23,5 +23,13 @@ impl Permissions {
 
     pub fn allowed(&self, p: &Permission) -> bool {
         self.permissions.contains(p)
+    }
+}
+
+impl Default for Permissions {
+    fn default() -> Self {
+        Permissions {
+            permissions: vec![Permission::Attack, Permission::Block],
+        }
     }
 }
