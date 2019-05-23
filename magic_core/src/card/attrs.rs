@@ -13,11 +13,14 @@ pub enum Subtype {
     Aura,
     Elemental,
     Forest,
+    Human,
+    Soldier,
     Wall,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum KeywordAbility {
+    Bands,
     Defender,
     Flying,
     Hexproof,
