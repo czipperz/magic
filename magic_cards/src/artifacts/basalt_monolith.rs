@@ -1,3 +1,4 @@
+use crate::cast::CastPermanent;
 use crate::mana_ability::add_mana;
 use magic_core::action::{Action, ActionResolver, ActivatedAction, Cost};
 use magic_core::card::{Card, CardBuilder};
@@ -12,6 +13,7 @@ pub fn basalt_monolith() -> Card {
     CardBuilder::new()
         .with_name("Basalt Monolith")
         .with_mana_cost(ManaCost::new().with_generic(3))
+        .on_resolve(CastPermanent)
         .with_replacement_effect(BasaltMonolithDoesntUntapInUntapStep)
         .with_ability(
             Action::from(UntapThisPermanent)
