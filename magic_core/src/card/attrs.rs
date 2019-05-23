@@ -20,7 +20,7 @@ pub enum Subtype {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum KeywordAbility {
-    Bands,
+    Banding,
     Defender,
     Flying,
     Hexproof,

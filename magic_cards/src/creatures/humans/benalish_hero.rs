@@ -12,7 +12,7 @@ pub fn benalish_hero() -> Card {
         .with_subtype(Subtype::Soldier)
         .with_power(1)
         .with_toughness(1)
-        .with_keyword_ability(KeywordAbility::Bands)
+        .with_keyword_ability(KeywordAbility::Banding)
         .build()
 }
 
@@ -29,6 +29,6 @@ mod test {
         assert_eq!(card.subtypes, &[Subtype::Human, Subtype::Soldier]);
         assert_eq!(card.power, Some(1));
         assert_eq!(card.toughness, Some(1));
-        assert_eq!(card.keyword_abilities, &[KeywordAbility::Bands]);
+        assert_eq!(card.keyword_abilities, &[KeywordAbility::Banding]);
     }
 }
