@@ -79,3 +79,71 @@ impl Effect for AnimateDeadEffect {
         card.power.as_mut().map(|power| *power -= 1);
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::test::*;
+    use magic_core::player::PlayerID;
+
+    #[test]
+    fn test_constructor() {
+        let card = animate_dead();
+        assert_eq!(card.name, "Animate Dead");
+        assert_eq!(
+            *card.mana_cost(),
+            ManaCost::new().with_black(1).with_generic(1)
+        );
+        assert_eq!(card.types, &[Type::Enchantment]);
+        assert_eq!(card.subtypes, &[Subtype::Aura]);
+        assert_eq!(card.triggers.len(), 2);
+    }
+
+    fn respond_event(player: PlayerID, instance: InstanceID) -> Event {
+        use magic_core::source::Source;
+        Event::State(
+            Source {
+                controller: player,
+                instance,
+            },
+            StateEvent::Card(instance, CardEvent::MoveTo(player, Zone::Battlefield)),
+        )
+    }
+
+    #[test]
+    fn test_respond() {
+        let (state, instance) = state_with_card(base_card().build());
+        let event = respond_event(state.players()[0], instance);
+
+        let action = AnimateDeadEnterTheBattlefieldTrigger.respond(&state, instance, &event);
+
+        assert!(action.is_some());
+    }
+
+    #[test]
+    fn test_respond_different_card() {
+        let (state, instances) = state_with_cards(vec![base_card().build(), base_card().build()]);
+        let event = respond_event(state.players()[0], instances[0]);
+
+        let action = AnimateDeadEnterTheBattlefieldTrigger.respond(&state, instances[1], &event);
+
+        assert!(action.is_none());
+    }
+
+    #[test]
+    fn test_respond_no_match() {
+        let (state, instance) = state_with_card(base_card().build());
+        use magic_core::source::Source;
+        let event = Event::State(
+            Source {
+                controller: state.players()[0],
+                instance,
+            },
+            StateEvent::Card(instance, CardEvent::Tap),
+        );
+
+        let action = AnimateDeadEnterTheBattlefieldTrigger.respond(&state, instance, &event);
+
+        assert!(action.is_none());
+    }
+}

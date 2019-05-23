@@ -24,4 +24,15 @@ mod x {
             state.add_instance(Instance::new(card, state.players()[0], Zone::Battlefield));
         (state, instance)
     }
+
+    pub fn state_with_cards(cards: Vec<Card>) -> (State, Vec<InstanceID>) {
+        let mut state = State::new(0, vec![cards.clone()]);
+        let mut instances = Vec::new();
+        for card in cards {
+            let instance =
+                state.add_instance(Instance::new(card, state.players()[0], Zone::Battlefield));
+            instances.push(instance);
+        }
+        (state, instances)
+    }
 }
