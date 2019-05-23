@@ -1,4 +1,5 @@
 mod cast;
+mod mana_ability;
 
 pub mod artifacts;
 pub mod creatures;
