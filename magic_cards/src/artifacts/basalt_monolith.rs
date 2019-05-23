@@ -53,3 +53,17 @@ impl ActionResolver for UntapThisPermanent {
         )]
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_construct() {
+        let card = basalt_monolith();
+        assert_eq!(card.name, "Basalt Monolith");
+        assert_eq!(*card.mana_cost(), ManaCost::new().with_generic(3));
+        assert_eq!(card.replacement_effects.len(), 1);
+        assert_eq!(card.abilities.len(), 2);
+    }
+}

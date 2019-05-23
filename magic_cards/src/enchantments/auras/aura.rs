@@ -89,3 +89,38 @@ impl ActionResolver for AttachAura {
         vec![attach(action, self.effect.clone())]
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use magic_core::card::Card;
+
+    #[derive(Debug)]
+    struct DoNothingEffect;
+    impl Effect for DoNothingEffect {
+        fn affect(&self, _: &State, _: InstanceID, _: &mut Card) {}
+    }
+
+    #[test]
+    fn test_aura_permanent() {
+        let card = aura_permanent(|_, _| false, DoNothingEffect)
+            .with_name("")
+            .with_colors(vec![])
+            .build();
+        assert_eq!(card.cast_action.target_descriptions.len(), 1);
+        assert_eq!(card.triggers.len(), 1);
+    }
+
+    #[test]
+    fn test_aura() {
+        let card = aura(
+            TargetDescription::permanent(1, |_, _| false),
+            DoNothingEffect,
+        )
+        .with_name("")
+        .with_colors(vec![])
+        .build();
+        assert_eq!(card.cast_action.target_descriptions.len(), 1);
+        assert_eq!(card.triggers.len(), 1);
+    }
+}

@@ -51,3 +51,17 @@ impl ActionResolver for AnkhOfMishraAction {
         )]
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_construction() {
+        let card = ankh_of_mishra();
+        assert_eq!(card.name, "Ankh of Mishra");
+        assert_eq!(*card.mana_cost(), ManaCost::new().with_generic(2));
+        assert_eq!(card.types, &[Type::Artifact]);
+        assert_eq!(card.triggers.len(), 1);
+    }
+}

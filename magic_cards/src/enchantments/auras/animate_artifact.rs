@@ -30,3 +30,20 @@ impl Effect for AnimateArtifactEffect {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_constructor() {
+        let card = animate_artifact();
+        assert_eq!(card.name, "Animate Artifact");
+        assert_eq!(
+            *card.mana_cost(),
+            ManaCost::new().with_blue(1).with_generic(3)
+        );
+        assert_eq!(card.types, &[Type::Enchantment]);
+        assert_eq!(card.subtypes, &[Subtype::Aura]);
+    }
+}
