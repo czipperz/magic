@@ -1,5 +1,6 @@
 mod cast;
 mod mana_ability;
+mod test;
 
 pub mod artifacts;
 pub mod creatures;

@@ -34,9 +34,7 @@ impl Effect for AnimateArtifactEffect {
 #[cfg(test)]
 mod test {
     use super::*;
-    use magic_core::card::CardBuilder;
-    use magic_core::instance::Instance;
-    use magic_core::zone::Zone;
+    use crate::test::*;
 
     #[test]
     fn test_constructor() {
@@ -50,21 +48,8 @@ mod test {
         assert_eq!(card.subtypes, &[Subtype::Aura]);
     }
 
-    fn base_card() -> CardBuilder {
-        CardBuilder::new()
-            .with_name("")
-            .with_mana_cost(ManaCost::new().with_generic(4))
-            .on_resolve(crate::cast::CastPermanent)
-    }
-
     fn affect(card: &mut Card) {
-        let mut state = State::new(0, vec![vec![card.clone()]]);
-        let instance = state.add_instance(Instance::new(
-            card.clone(),
-            state.players()[0],
-            Zone::Battlefield,
-        ));
-
+        let (state, instance) = state_with_card(card.clone());
         AnimateArtifactEffect.affect(&state, instance, card);
     }
 
