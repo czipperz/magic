@@ -1,6 +1,7 @@
 use crate::action::{ActivatedAction, Target};
 use crate::effect::Effect;
 use crate::instance::InstanceID;
+use crate::mana::ManaPool;
 use crate::player::PlayerID;
 use crate::source::Source;
 use crate::state::State;
@@ -24,11 +25,13 @@ pub enum CardEvent {
     MoveTo(PlayerID, Zone),
     AttachTo(Target, Arc<Effect>),
     Destroy,
+    Tap,
 }
 
 pub enum PlayerEvent {
     TakeDamage(usize),
     DrawCards(usize),
+    AddMana(ManaPool),
 }
 
 pub enum UserEvent {

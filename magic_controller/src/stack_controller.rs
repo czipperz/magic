@@ -118,7 +118,7 @@ fn activate(
     // Attempt to actually pay the payments.  If we can't, don't do anything.
     if pay_payments(
         state,
-        action.source.controller,
+        &action.source,
         mandatory_payments
             .iter()
             .chain(optional_payments.iter().filter_map(|x| x.as_ref())),
@@ -164,6 +164,13 @@ fn select_payment(
     mandatory_cost: Cost,
 ) -> Option<Payment> {
     match mandatory_cost {
+        Cost::Tap => {
+            if source.instance.get(state).tapped {
+                None
+            } else {
+                Some(Payment::Tap)
+            }
+        }
         Cost::Mana(mana_cost) => select_mana(ui, state, mana_cost),
         Cost::Sacrifice(count, predicate) => select_sacrifice(
             ui,
@@ -201,24 +208,33 @@ fn select_sacrifice(
 
 fn pay_payments<'a, I: Iterator<Item = &'a Payment>>(
     state: &mut State,
-    player: PlayerID,
+    source: &Source,
     payments: I,
 ) -> bool {
     if let Some(payments) = unify_payments(payments) {
         for payment in payments {
             match payment {
+                Payment::Tap => pay_tap(state, source.instance),
                 Payment::Mana(payment) => {
-                    if !pay_mana_payment(state, player, payment) {
+                    if !pay_mana_payment(state, source.controller, payment) {
                         return false;
                     }
                 }
-                Payment::Sacrifice(sacrifices) => pay_sacrifices(state, player, sacrifices),
+                Payment::Sacrifice(sacrifices) => {
+                    pay_sacrifices(state, source.controller, sacrifices)
+                }
             }
         }
         true
     } else {
         false
     }
+}
+
+fn pay_tap(state: &mut State, instance: InstanceID) {
+    let instance = state.instance_mut(instance);
+    assert!(!instance.tapped);
+    instance.tapped = true;
 }
 
 fn pay_mana_payment(state: &mut State, player: PlayerID, payment: ManaPayment) -> bool {
@@ -291,10 +307,18 @@ fn pay_sacrifices(_state: &mut State, _player: PlayerID, sacrifices: Vec<Instanc
 
 fn unify_payments<'a, I: Iterator<Item = &'a Payment>>(payments: I) -> Option<Vec<Payment>> {
     use std::collections::HashSet;
+    let mut tapping = false;
     let mut mana_payment = ManaPayment::default();
     let mut sacrifice_payment = HashSet::new();
     for payment in payments {
         match payment {
+            Payment::Tap => {
+                if tapping {
+                    return None;
+                } else {
+                    tapping = true;
+                }
+            }
             Payment::Mana(mana) => {
                 mana_payment += mana;
             }
@@ -308,8 +332,13 @@ fn unify_payments<'a, I: Iterator<Item = &'a Payment>>(payments: I) -> Option<Ve
             }
         }
     }
-    Some(vec![
+
+    let mut payments = vec![
         Payment::Mana(mana_payment),
         Payment::Sacrifice(sacrifice_payment.into_iter().collect()),
-    ])
+    ];
+    if tapping {
+        payments.push(Payment::Tap);
+    }
+    Some(payments)
 }

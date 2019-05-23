@@ -9,6 +9,7 @@ use std::sync::Arc;
 /// The payment supplied to satisfy the `Cost`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Payment {
+    Tap,
     Mana(ManaPayment),
     Sacrifice(Vec<InstanceID>),
 }
@@ -16,6 +17,7 @@ pub enum Payment {
 /// The cost needed to perform an `Action`.
 #[derive(Clone, Eq, PartialEq)]
 pub enum Cost {
+    Tap,
     Mana(ManaCost),
     Sacrifice(Count, ByAddress<Arc<Fn(&State, InstanceID) -> bool>>),
 }
@@ -24,6 +26,7 @@ impl fmt::Debug for Cost {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Cost::")?;
         match self {
+            Cost::Tap => write!(f, "Tap"),
             Cost::Mana(cost) => write!(f, "Mana({:?})", cost),
             Cost::Sacrifice(count, _) => write!(f, "Sacrifice({:?}, {:?})", count, ".."),
         }
