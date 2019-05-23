@@ -1,8 +1,8 @@
 use super::aura::aura_permanent;
 use magic_core::card::{Card, Subtype, Type};
 use magic_core::effect::Effect;
+use magic_core::instance::InstanceID;
 use magic_core::mana::ManaCost;
-use magic_core::permanent::{Permanent, PermanentID};
 use magic_core::permission::Permission;
 use magic_core::state::State;
 
@@ -15,14 +15,14 @@ pub fn animate_wall() -> Card {
         .build()
 }
 
-fn is_wall(state: &State, instance: PermanentID) -> bool {
+fn is_wall(state: &State, instance: InstanceID) -> bool {
     instance.get(state).subtypes.contains(&Subtype::Wall)
 }
 
 #[derive(Debug)]
 struct AnimateWallEffect;
 impl Effect for AnimateWallEffect {
-    fn affect(&self, _: &State, permanent: &mut Permanent) {
-        permanent.permissions.add(Permission::Attack);
+    fn affect(&self, _: &State, _: InstanceID, card: &mut Card) {
+        card.permissions.add(Permission::Attack);
     }
 }

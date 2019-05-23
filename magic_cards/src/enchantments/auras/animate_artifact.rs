@@ -1,8 +1,8 @@
 use super::aura::aura_permanent;
 use magic_core::card::{Card, Subtype, Type};
 use magic_core::effect::Effect;
+use magic_core::instance::InstanceID;
 use magic_core::mana::ManaCost;
-use magic_core::permanent::{Permanent, PermanentID};
 use magic_core::state::State;
 
 pub fn animate_artifact() -> Card {
@@ -14,23 +14,19 @@ pub fn animate_artifact() -> Card {
         .build()
 }
 
-fn is_artifact(state: &State, permanent: PermanentID) -> bool {
-    permanent.get(state).types.contains(&Type::Artifact)
+fn is_artifact(state: &State, instance: InstanceID) -> bool {
+    instance.get(state).types.contains(&Type::Artifact)
 }
 
 #[derive(Debug)]
 struct AnimateArtifactEffect;
 impl Effect for AnimateArtifactEffect {
-    fn affect(&self, state: &State, permanent: &mut Permanent) {
-        if !permanent.types.contains(&Type::Creature) {
-            permanent.types.push(Type::Creature);
-            let cmc = permanent
-                .instance(state)
-                .card(state)
-                .mana_cost()
-                .converted() as isize;
-            permanent.power = Some(cmc);
-            permanent.toughness = Some(cmc);
+    fn affect(&self, _: &State, _: InstanceID, card: &mut Card) {
+        if !card.types.contains(&Type::Creature) {
+            card.types.push(Type::Creature);
+            let cmc = card.mana_cost().converted() as isize;
+            card.power = Some(cmc);
+            card.toughness = Some(cmc);
         }
     }
 }

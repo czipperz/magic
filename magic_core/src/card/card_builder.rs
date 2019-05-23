@@ -3,6 +3,7 @@ use crate::action::{Action, ActionResolver, Cost, TargetDescription, Trigger};
 use crate::card::Card;
 use crate::effect::Effect;
 use crate::mana::{Color, ManaCost};
+use crate::permission::{Permission, Permissions};
 use crate::replacement_effect::ReplacementEffect;
 use by_address::ByAddress;
 use std::sync::Arc;
@@ -24,6 +25,7 @@ pub struct CardBuilder {
     self_effects: Vec<ByAddress<Arc<Effect>>>,
     global_effects: Vec<ByAddress<Arc<Effect>>>,
     color_words: Vec<Color>,
+    permissions: Permissions,
 
     power: Option<isize>,
     toughness: Option<isize>,
@@ -48,6 +50,7 @@ impl CardBuilder {
             self_effects: Vec::new(),
             global_effects: Vec::new(),
             color_words: Vec::new(),
+            permissions: Permissions::default(),
 
             power: None,
             toughness: None,
@@ -75,6 +78,7 @@ impl CardBuilder {
             self_effects: self.self_effects,
             global_effects: self.global_effects,
             color_words: self.color_words,
+            permissions: self.permissions,
 
             power: self.power,
             toughness: self.toughness,
@@ -168,6 +172,16 @@ impl CardBuilder {
 
     pub fn with_color_words(mut self, color_words: Vec<Color>) -> Self {
         self.color_words = color_words;
+        self
+    }
+
+    pub fn with_permission(mut self, permission: Permission) -> Self {
+        self.permissions.add(permission);
+        self
+    }
+
+    pub fn without_permission(mut self, permission: &Permission) -> Self {
+        self.permissions.remove(permission);
         self
     }
 

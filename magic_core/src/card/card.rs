@@ -2,13 +2,10 @@ use super::{KeywordAbility, Subtype, Type};
 use crate::action::{Action, Cost, Trigger};
 use crate::effect::Effect;
 use crate::mana::{Color, ManaCost};
+use crate::permission::Permissions;
 use crate::replacement_effect::ReplacementEffect;
-use crate::state::State;
 use by_address::ByAddress;
 use std::sync::Arc;
-
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-pub struct CardID(pub(crate) usize);
 
 /// A `Card` represents the information written on a physical card.
 ///
@@ -28,15 +25,10 @@ pub struct Card {
     pub self_effects: Vec<ByAddress<Arc<Effect>>>,
     pub global_effects: Vec<ByAddress<Arc<Effect>>>,
     pub color_words: Vec<Color>,
+    pub permissions: Permissions,
 
     pub power: Option<isize>,
     pub toughness: Option<isize>,
-}
-
-impl CardID {
-    pub fn get<'a>(self, state: &'a State) -> &'a Card {
-        state.card(self)
-    }
 }
 
 impl Card {

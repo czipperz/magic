@@ -19,13 +19,12 @@ struct CastArmageddon;
 impl ActionResolver for CastArmageddon {
     fn resolve(&self, state: &State, _: &mut UserInterface, action: ActivatedAction) -> Vec<Event> {
         state
-            .permanents()
-            .map(|pid| pid.get(state))
-            .filter(|permanent| permanent.types.contains(&Type::Land))
-            .map(|permanent| {
+            .instances()
+            .filter(|instance| instance.get(state).types.contains(&Type::Land))
+            .map(|instance| {
                 Event::State(
                     action.source.clone(),
-                    StateEvent::Card(permanent.instance, CardEvent::Destroy),
+                    StateEvent::Card(instance, CardEvent::Destroy),
                 )
             })
             .collect()

@@ -4,14 +4,13 @@ use magic_core::card::CardBuilder;
 use magic_core::effect::Effect;
 use magic_core::event::*;
 use magic_core::instance::InstanceID;
-use magic_core::permanent::PermanentID;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
 use magic_core::zone::Zone;
 use std::sync::Arc;
 
 pub fn aura_permanent(
-    predicate: impl Fn(&State, PermanentID) -> bool + 'static,
+    predicate: impl Fn(&State, InstanceID) -> bool + 'static,
     effect: impl Effect + 'static,
 ) -> CardBuilder {
     aura(TargetDescription::permanent(1, predicate), effect)
@@ -60,15 +59,14 @@ impl Trigger for EnterTheBattlefieldAttachIfNot {
             Event::State(_, StateEvent::Card(card, CardEvent::MoveTo(_, Zone::Battlefield)))
                 if *card == instance =>
             {
-                if let Some(permanent) = card.permanent(state) {
-                    if permanent.attached_to.is_none() {
-                        return Some(
-                            Action::from(AttachAura {
-                                effect: self.effect.clone(),
-                            })
-                            .with_target(self.target.clone()),
-                        );
-                    }
+                let instance = instance.get(state);
+                if instance.attached_to.is_none() {
+                    return Some(
+                        Action::from(AttachAura {
+                            effect: self.effect.clone(),
+                        })
+                        .with_target(self.target.clone()),
+                    );
                 }
             }
             _ => (),

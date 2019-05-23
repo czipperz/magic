@@ -23,19 +23,19 @@ pub fn ankh_of_mishra() -> Card {
 struct AnkhOfMishraTrigger;
 impl Trigger for AnkhOfMishraTrigger {
     fn respond(&self, state: &State, _ankh: InstanceID, event: &Event) -> Option<Action> {
-        match event {
-            Event::State(
-                _,
-                StateEvent::Card(instance, CardEvent::MoveTo(_, Zone::Battlefield)),
-            ) if instance.get(state).zone != Zone::Battlefield
-                && instance.card(state).types.contains(&Type::Land) =>
-            {
-                Some(Action::from(AnkhOfMishraAction {
-                    controller: instance.get(state).controller,
-                }))
+        if let Event::State(
+            _,
+            StateEvent::Card(instance, CardEvent::MoveTo(_, Zone::Battlefield)),
+        ) = event
+        {
+            let instance = instance.get(state);
+            if instance.zone != Zone::Battlefield && instance.types.contains(&Type::Land) {
+                return Some(Action::from(AnkhOfMishraAction {
+                    controller: instance.controller,
+                }));
             }
-            _ => None,
         }
+        None
     }
 }
 

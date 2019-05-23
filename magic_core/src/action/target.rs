@@ -1,9 +1,9 @@
 use crate::action::ActivatedAction;
 use crate::count::Count;
 use crate::instance::InstanceID;
-use crate::permanent::PermanentID;
 use crate::player::PlayerID;
 use crate::state::State;
+use crate::zone::Zone;
 use by_address::ByAddress;
 use std::fmt;
 use std::sync::Arc;
@@ -11,16 +11,14 @@ use std::sync::Arc;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Target {
     Player(Vec<PlayerID>),
-    Permanent(Vec<InstanceID>),
-    Graveyard(Vec<InstanceID>),
+    Instance(Vec<InstanceID>),
     Spell(Vec<InstanceID>),
 }
 
 #[derive(Clone, Eq, PartialEq)]
 pub enum TargetDescription {
     Player(Count, ByAddress<Arc<Fn(&State, PlayerID) -> bool>>),
-    Permanent(Count, ByAddress<Arc<Fn(&State, PermanentID) -> bool>>),
-    Graveyard(Count, ByAddress<Arc<Fn(&State, InstanceID) -> bool>>),
+    Instance(Count, ByAddress<Arc<Fn(&State, InstanceID) -> bool>>),
     ActivatedAction(Count, ByAddress<Arc<Fn(&State, &ActivatedAction) -> bool>>),
 }
 
@@ -32,18 +30,29 @@ impl TargetDescription {
         TargetDescription::Player(count.into(), ByAddress(Arc::new(predicate)))
     }
 
+    pub fn instance(
+        count: impl Into<Count>,
+        predicate: impl Fn(&State, InstanceID) -> bool + 'static,
+    ) -> Self {
+        TargetDescription::Instance(count.into(), ByAddress(Arc::new(predicate)))
+    }
+
     pub fn permanent(
         count: impl Into<Count>,
-        predicate: impl Fn(&State, PermanentID) -> bool + 'static,
+        predicate: impl Fn(&State, InstanceID) -> bool + 'static,
     ) -> Self {
-        TargetDescription::Permanent(count.into(), ByAddress(Arc::new(predicate)))
+        Self::instance(count, move |state, instance_id| {
+            instance_id.get(state).zone == Zone::Battlefield && predicate(state, instance_id)
+        })
     }
 
     pub fn graveyard(
         count: impl Into<Count>,
         predicate: impl Fn(&State, InstanceID) -> bool + 'static,
     ) -> Self {
-        TargetDescription::Graveyard(count.into(), ByAddress(Arc::new(predicate)))
+        Self::instance(count, move |state, instance_id| {
+            instance_id.get(state).zone == Zone::Graveyard && predicate(state, instance_id)
+        })
     }
 
     pub fn spell(
@@ -59,8 +68,7 @@ impl fmt::Debug for TargetDescription {
         write!(f, "TargetDescription::")?;
         match self {
             TargetDescription::Player(count, _) => write!(f, "Player({:?}, {})", count, ".."),
-            TargetDescription::Permanent(count, _) => write!(f, "Permanent({:?}, {})", count, ".."),
-            TargetDescription::Graveyard(count, _) => write!(f, "Graveyard({:?}, {})", count, ".."),
+            TargetDescription::Instance(count, _) => write!(f, "Instance({:?}, {})", count, ".."),
             TargetDescription::ActivatedAction(count, _) => {
                 write!(f, "Spell({:?}, {})", count, "..")
             }

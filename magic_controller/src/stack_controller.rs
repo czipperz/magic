@@ -165,11 +165,17 @@ fn select_payment(
 ) -> Option<Payment> {
     match mandatory_cost {
         Cost::Mana(mana_cost) => select_mana(ui, state, mana_cost),
-        Cost::Sacrifice(permanent, predicate) => select_sacrifice(
+        Cost::Sacrifice(count, predicate) => select_sacrifice(
             ui,
             state,
             source,
-            TargetDescription::Permanent(permanent, predicate),
+            TargetDescription::permanent(count, {
+                let controller = source.controller;
+                move |state, instance_id| {
+                    let instance = instance_id.get(state);
+                    instance.controller == controller && predicate(state, instance_id)
+                }
+            }),
         ),
     }
 }
@@ -188,7 +194,7 @@ fn select_sacrifice(
 ) -> Option<Payment> {
     ui.choose_target(state, source, target)
         .map(|target| match target {
-            Target::Permanent(permanents) => Payment::Sacrifice(permanents),
+            Target::Instance(permanents) => Payment::Sacrifice(permanents),
             _ => unreachable!(),
         })
 }

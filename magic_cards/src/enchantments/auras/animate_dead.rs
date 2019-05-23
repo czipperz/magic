@@ -7,7 +7,6 @@ use magic_core::effect::Effect;
 use magic_core::event::*;
 use magic_core::instance::InstanceID;
 use magic_core::mana::ManaCost;
-use magic_core::permanent::Permanent;
 use magic_core::state::State;
 use magic_core::ui::UserInterface;
 use magic_core::zone::Zone;
@@ -26,7 +25,7 @@ pub fn animate_dead() -> Card {
 }
 
 fn is_creature(state: &State, instance: InstanceID) -> bool {
-    instance.card(state).types.contains(&Type::Creature)
+    instance.get(state).types.contains(&Type::Creature)
 }
 
 #[derive(Debug)]
@@ -48,10 +47,10 @@ impl Trigger for AnimateDeadEnterTheBattlefieldTrigger {
 struct AnimateDeadEnterTheBattlefieldAction;
 impl ActionResolver for AnimateDeadEnterTheBattlefieldAction {
     fn resolve(&self, state: &State, _: &mut UserInterface, action: ActivatedAction) -> Vec<Event> {
-        let aura_instance = action.source.instance;
-        let aura = aura_instance.permanent(state).unwrap();
+        let aura_id = action.source.instance;
+        let aura = aura_id.get(state);
         match &aura.attached_to {
-            Some(Target::Graveyard(creatures)) => {
+            Some(Target::Instance(creatures)) => {
                 assert_eq!(creatures.len(), 1);
                 let creature = creatures[0];
                 vec![
@@ -59,9 +58,9 @@ impl ActionResolver for AnimateDeadEnterTheBattlefieldAction {
                     Event::State(
                         action.source,
                         StateEvent::Card(
-                            aura_instance,
+                            aura_id,
                             CardEvent::attach_to(
-                                Target::Permanent(vec![creature]),
+                                Target::Instance(vec![creature]),
                                 AnimateDeadEffect,
                             ),
                         ),
@@ -76,7 +75,7 @@ impl ActionResolver for AnimateDeadEnterTheBattlefieldAction {
 #[derive(Debug)]
 struct AnimateDeadEffect;
 impl Effect for AnimateDeadEffect {
-    fn affect(&self, _: &State, permanent: &mut Permanent) {
-        permanent.power.as_mut().map(|power| *power -= 1);
+    fn affect(&self, _: &State, _: InstanceID, card: &mut Card) {
+        card.power.as_mut().map(|power| *power -= 1);
     }
 }

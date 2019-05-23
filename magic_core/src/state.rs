@@ -1,15 +1,17 @@
-use crate::card::{Card, CardID};
+use crate::card::Card;
 use crate::instance::{Instance, InstanceID};
-use crate::permanent::{Permanent, PermanentID};
 use crate::player::{Player, PlayerID};
 use crate::zone::Zone;
+use std::borrow::Borrow;
+use std::cmp::Ordering;
+use std::collections::BTreeSet;
+use std::fmt;
 
 pub struct State {
     players: Vec<Player>,
     pub active_player: PlayerID,
-    cards: Vec<Card>,
+    cards: BTreeSet<CardByName>,
     instances: Vec<Instance>,
-    permanents: Vec<Permanent>,
 }
 
 impl State {
@@ -17,9 +19,8 @@ impl State {
         let mut state = State {
             players: Vec::new(),
             active_player: PlayerID(0),
-            cards: Vec::new(),
+            cards: BTreeSet::new(),
             instances: Vec::new(),
-            permanents: Vec::new(),
         };
 
         let health = health as i32;
@@ -28,33 +29,14 @@ impl State {
             let mut player_instances = Vec::new();
             for card in deck {
                 let owner = PlayerID(state.players.len());
-                state.cards.push(card);
-                state
-                    .instances
-                    .push(Instance::new(CardID(id), owner, Zone::Deck));
+                state.cards.insert(CardByName(card.clone()));
+                state.instances.push(Instance::new(card, owner, Zone::Deck));
                 player_instances.push(InstanceID(id));
                 id += 1;
             }
             state.players.push(Player::new(health, player_instances));
         }
         state
-    }
-
-    pub fn add_permanent_from(&mut self, instance_id: InstanceID) -> PermanentID {
-        self.add_permanent(Permanent::new(instance_id, instance_id.card(self)))
-    }
-
-    pub fn add_permanent(&mut self, permanent: Permanent) -> PermanentID {
-        let permanent_id = PermanentID(self.permanents.len());
-
-        {
-            let instance = self.instance_mut(permanent.instance);
-            assert_eq!(instance.permanent, None);
-            instance.permanent = Some(permanent_id);
-        }
-
-        self.permanents.push(permanent);
-        permanent_id
     }
 
     pub fn add_instance(&mut self, instance: Instance) -> InstanceID {
@@ -79,9 +61,9 @@ impl State {
         &mut self.players[player.0]
     }
 
-    pub(crate) fn card(&self, card: CardID) -> &Card {
-        &self.cards[card.0]
-    }
+    // pub(crate) fn card(&self, name: &str) -> Option<&Card> {
+    //     self.cards.get(name).map(|cbn| &cbn.0)
+    // }
 
     pub(crate) fn instance(&self, instance: InstanceID) -> &Instance {
         &self.instances[instance.0]
@@ -91,12 +73,35 @@ impl State {
         &mut self.instances[instance.0]
     }
 
-    pub(crate) fn permanent(&self, permanent: PermanentID) -> &Permanent {
-        &self.permanents[permanent.0]
+    pub fn instances(&self) -> impl Iterator<Item = InstanceID> {
+        (0..self.instances.len()).map(InstanceID)
     }
+}
 
-    pub fn permanents(&self) -> impl Iterator<Item = PermanentID> {
-        (0..self.permanents.len()).map(PermanentID)
+#[derive(PartialEq, Eq)]
+struct CardByName(Card);
+
+impl Borrow<str> for CardByName {
+    fn borrow(&self) -> &str {
+        &self.0.name
+    }
+}
+
+impl PartialOrd for CardByName {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.0.name.partial_cmp(&other.0.name)
+    }
+}
+
+impl Ord for CardByName {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.0.name.cmp(&other.0.name)
+    }
+}
+
+impl fmt::Debug for CardByName {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Debug::fmt(&self.0, fmt)
     }
 }
 
@@ -109,9 +114,8 @@ mod tests {
         let state = State::new(20, vec![]);
         assert_eq!(state.players, vec![]);
         assert_eq!(state.active_player, PlayerID(0));
-        assert_eq!(state.cards, vec![]);
+        assert_eq!(state.cards, BTreeSet::new());
         assert_eq!(state.instances, vec![]);
-        assert_eq!(state.permanents, vec![]);
     }
 
     #[test]

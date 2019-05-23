@@ -12,7 +12,7 @@ impl State {
         for player_id in self.players() {
             let player = player_id.get(&self);
             for instance in &player.battlefield {
-                let permanent = instance.permanent(&self).unwrap();
+                let permanent = instance.get(&self);
                 for trigger in &permanent.triggers {
                     if let Some(action) = trigger.respond(&self, *instance, &event) {
                         let source = Source {
@@ -56,7 +56,7 @@ impl State {
         for player_id in self.players() {
             let player = player_id.get(&self);
             for instance in &player.battlefield {
-                let permanent = instance.permanent(&self).unwrap();
+                let permanent = instance.get(&self);
                 for (index, replacement_effect) in permanent.replacement_effects.iter().enumerate()
                 {
                     if !history.contains(&(*instance, index)) {
@@ -154,7 +154,6 @@ mod tests {
         let player = state.player_mut(player_id);
         let instance = player.deck.pop().unwrap();
         player.battlefield.push(instance);
-        state.add_permanent_from(instance);
         let event = Event::Turn(player_id, TurnEvent::BeginPhase(Phase::Beginning));
 
         let actions = state.trigger(&event);
@@ -179,7 +178,6 @@ mod tests {
             let player = state.player_mut(player_id);
             let instance = player.deck.pop().unwrap();
             player.battlefield.push(instance);
-            state.add_permanent_from(instance);
         }
 
         let event = Event::Turn(
@@ -222,7 +220,6 @@ mod tests {
             let player = state.player_mut(player_id);
             let instance = player.deck.remove(*index);
             player.battlefield.push(instance);
-            state.add_permanent_from(instance);
         }
 
         let event = Event::Turn(

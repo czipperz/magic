@@ -1,7 +1,6 @@
 use crate::count::Count;
 use crate::instance::InstanceID;
 use crate::mana::{ManaCost, ManaPayment};
-use crate::permanent::PermanentID;
 use crate::state::State;
 use by_address::ByAddress;
 use std::fmt;
@@ -18,7 +17,7 @@ pub enum Payment {
 #[derive(Clone, Eq, PartialEq)]
 pub enum Cost {
     Mana(ManaCost),
-    Sacrifice(Count, ByAddress<Arc<Fn(&State, PermanentID) -> bool>>),
+    Sacrifice(Count, ByAddress<Arc<Fn(&State, InstanceID) -> bool>>),
 }
 
 impl fmt::Debug for Cost {
