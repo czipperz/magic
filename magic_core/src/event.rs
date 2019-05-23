@@ -26,6 +26,7 @@ pub enum CardEvent {
     AttachTo(Target, Arc<Effect>),
     Destroy,
     Tap,
+    Untap,
 }
 
 pub enum PlayerEvent {
